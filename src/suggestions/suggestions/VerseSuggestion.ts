@@ -1,4 +1,4 @@
-import { LinkType } from "src/utils/settings";
+import { CalloutStyle, LinkType } from "src/utils/settings";
 import { AvailableLanguage } from "../../utils/lang";
 import { BookData, ScriptureData, Verse } from "../../utils/types";
 import { book_data } from "src/data_access/config";
@@ -17,6 +17,7 @@ export class VerseSuggestion extends Suggestion {
     private url: string;
 
     constructor(
+        public calloutStyle: CalloutStyle,
         public pluginName: string,
         public book: string,
         public chapter: number,
@@ -38,7 +39,7 @@ export class VerseSuggestion extends Suggestion {
                 // Wiki style link to chapter document and outside URL
                 // const headerFront = `[[${this.book_title_in_language} ${this.chapter}|${this.book_title_in_language} ${this.chapter}:${range}]]`;
                 const headerFront = `[[${this.book_title_in_language}|${this.book_title_in_language}:${range}]]`;
-                const head = `> [!Mormon] ${headerFront} \n [churchofjesuschrist.org](${this.url})`;
+                const head = `> [!${this.calloutStyle}] ${headerFront} \n [churchofjesuschrist.org](${this.url})`;
                 return head + "\n" + this.text + "\n";
             } else if (linktype == LinkType.markdown) {
                 // Markdown style link with spaces encoded as %20
@@ -46,14 +47,14 @@ export class VerseSuggestion extends Suggestion {
                     this.book_title_in_language
                 );
                 const headerFront = `[${this.book_title_in_language}:${range}](${encodedBookChapter})`;
-                const head = `> [!Mormon] ${headerFront} \n [churchofjesuschrist.org](${this.url})`;
+                const head = `> [!${this.calloutStyle}] ${headerFront} \n [churchofjesuschrist.org](${this.url})`;
                 return head + "\n" + this.text + "\n";
             }
         }
 
         // Normal function
         const headerFront = `${this.book_title_in_language}:`;
-        const head = `> [!Mormon] [${headerFront}${range}](${this.url})`;
+        const head = `> [!${this.calloutStyle}] [${headerFront}${range}](${this.url})`;
         return head + "\n" + this.text + "\n";
     }
 

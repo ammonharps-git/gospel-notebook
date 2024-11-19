@@ -79,6 +79,7 @@ export class VerseSuggester extends Suggester<VerseSuggestion> {
         const verses: number[] = this.parseVerses(fullMatch[3]);
 
         const suggestion = new VerseSuggestion(
+            this.plugin.settings.calloutStyle,
             this.plugin.manifest.id,
             book,
             chapter,

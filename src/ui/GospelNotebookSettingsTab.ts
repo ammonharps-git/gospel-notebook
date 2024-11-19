@@ -11,7 +11,11 @@ import {
     LANGUAGE_MAPPING,
     AvailableLanguage,
 } from "../utils/lang";
-import { CalloutCollapseType, LinkType } from "src/utils/settings";
+import {
+    CalloutCollapseType,
+    CalloutStyle,
+    LinkType,
+} from "src/utils/settings";
 
 // TODO clean up settings and divide into three tabs: Scriptures, References, and General Conference quotes
 
@@ -38,7 +42,7 @@ export class GospelNotebookSettingsTab extends PluginSettingTab {
             });
     }
 
-    setCalloutCollapseOption(containerEl: HTMLElement) {
+    setCalloutOptions(containerEl: HTMLElement) {
         new Setting(containerEl)
             .setName("Default Callout Collapsability")
             .setDesc(
@@ -57,6 +61,22 @@ export class GospelNotebookSettingsTab extends PluginSettingTab {
                         this.plugin.settings.calloutCollapseType = value;
                         await this.plugin.saveSettings();
                         new Notice("Default Callout Collapsability Updated");
+                    });
+            });
+        new Setting(containerEl)
+            .setName("Callout Style")
+            .setDesc(
+                "Choose between classic Obisidian or custom callout styles for scriptures."
+            )
+            .addDropdown((dropdown) => {
+                dropdown.addOption(CalloutStyle.classic, "Classic");
+                dropdown.addOption(CalloutStyle.stylized, "Stylized");
+                dropdown
+                    .setValue(this.plugin.settings.calloutStyle)
+                    .onChange(async (value: CalloutStyle) => {
+                        this.plugin.settings.calloutStyle = value;
+                        await this.plugin.saveSettings();
+                        new Notice("Callout Style Updated");
                     });
             });
     }
@@ -149,7 +169,7 @@ export class GospelNotebookSettingsTab extends PluginSettingTab {
         containerEl.createEl("h1", { text: "Gospel Notebook Settings" });
         this.setupLanguageOption(containerEl);
         this.setupLinkOption(containerEl);
-        this.setCalloutCollapseOption(containerEl);
+        this.setCalloutOptions(containerEl);
         this.setVerseTrigger(containerEl);
         this.toggleInvisibleLinks(containerEl);
 

@@ -11,6 +11,11 @@ export enum LinkType {
     markdown = "markdown",
 }
 
+export enum CalloutStyle {
+    classic = "Scripture",
+    stylized = "Mormon",
+}
+
 export interface GospelNotebookSettings {
     language: AvailableLanguage;
     linkType: LinkType; // I want to add program default as an option, but not sure how to yet.
@@ -19,6 +24,7 @@ export interface GospelNotebookSettings {
     calloutCollapseType: CalloutCollapseType;
     verseTrigger: string;
     toggleInvisibleLinks: boolean;
+    calloutStyle: CalloutStyle;
 }
 
 export const DEFAULT_SETTINGS: GospelNotebookSettings = {
@@ -29,4 +35,5 @@ export const DEFAULT_SETTINGS: GospelNotebookSettings = {
     calloutCollapseType: CalloutCollapseType.Expanded,
     verseTrigger: "+",
     toggleInvisibleLinks: true,
+    calloutStyle: CalloutStyle.classic,
 };
