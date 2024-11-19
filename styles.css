@@ -36,7 +36,7 @@
 }
 
 /* Stylized Mormon Callout */
-.callout[data-callout="mormon"] {
+.callout[data-callout="Stylized"] {
     --callout-icon: var(--callout-icon-quote);
     --link-external-color: var(--callout-color-primary);
     border-color: var(--callout-color-border) !important;
@@ -64,11 +64,11 @@
 }
 
 /* Classic Style Scripture Callout */
-.callout[data-callout="scripture"] {
+.callout[data-callout="Mormon"] {
     --callout-icon: book-plus;
 }
 
-.callout[data-callout="mormon"] .callout-content p {
+.callout[data-callout="Stylized"] .callout-content p {
     font-style: italic;
     /* text-align: center; */
 }

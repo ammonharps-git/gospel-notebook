@@ -20,15 +20,15 @@ export class VerseSuggester extends Suggester<VerseSuggestion> {
         super(plugin);
     }
 
-    // fetch trigger to look for from settings but delimit it with backslashes to prevent unwantd RegEx behavior
-    private getVerseTrigger() {
+    // fetch trigger from settings but delimit it with backslashes to prevent unwantd RegEx behavior
+    private getVerseTrigger(): string {
         const trigger: string = this.plugin.settings.verseTrigger
             ? "\\" + this.plugin.settings.verseTrigger.split("").join("\\")
             : "";
         return trigger;
     }
 
-    private getVerseReg(flags: string) {
+    private getVerseReg(flags: string): RegExp {
         return new RegExp(
             `${this.getVerseTrigger()}([1234]*[A-Za-z ]{3,}) (\\d{1,3}):(.*);`,
             flags

@@ -4,7 +4,10 @@ import { BookData, ScriptureData, Verse } from "../../utils/types";
 import { book_data } from "src/data_access/config";
 import { fetchScripture } from "src/data_access/scripture";
 import { Suggestion } from "./Suggestion";
-// import {App} from "obsidian"
+
+// TODO clean up this class by removing unneeded variables and examine how data is being stored and handled
+// TODO Consolodate data access to the plugin level using DAO for improved layered architecture that is only dependent on abstractions rather than implementations
+// TODO maybe refactor all data access to the Suggester layer? That would decrease dependencies and more closely follow Single Responsibility Principle
 
 export class VerseSuggestion extends Suggestion {
     public text: string;
@@ -21,7 +24,7 @@ export class VerseSuggestion extends Suggestion {
         public pluginName: string,
         public book: string,
         public chapter: number,
-        public vers: number[],
+        public vers: number[], // TODO avoid primative obsession
         public lang: AvailableLanguage,
         public linkType: LinkType,
         public createChapterLink: boolean
@@ -30,7 +33,6 @@ export class VerseSuggestion extends Suggestion {
     }
 
     public getReplacement(): string {
-        // const url = this.getUrl();
         let linktype = this.linkType;
         let range = this.formatNumberList(this.vers);
 

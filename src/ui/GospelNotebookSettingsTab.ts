@@ -17,7 +17,7 @@ import {
     LinkType,
 } from "src/utils/settings";
 
-// TODO clean up settings and divide into three tabs: Scriptures, References, and General Conference quotes
+// TODO clean up settings and divide into three tabs: Scriptures, References, and General Conference
 
 export class GospelNotebookSettingsTab extends PluginSettingTab {
     constructor(app: App, public plugin: GospelNotebookPlugin) {
