@@ -3,10 +3,10 @@ import { AvailableLanguage } from "../../lang";
 import { BookData, ScriptureData, Verse } from "../../types";
 import { book_data } from "src/utils/config";
 import { fetchScripture } from "src/utils/scripture";
+import { Suggestion } from "./Suggestion";
 // import {App} from "obsidian"
 
-export class VerseSuggestion {
-    // defining variables in the class.
+export class VerseSuggestion extends Suggestion {
     public text: string;
     public previewText: string;
     public chapter_data: ScriptureData[];
@@ -18,7 +18,6 @@ export class VerseSuggestion {
     private url: string;
 
     constructor(
-        //input variables.
         public pluginName: string,
         public book: string,
         public chapter: number,
@@ -26,7 +25,9 @@ export class VerseSuggestion {
         public lang: AvailableLanguage,
         public linkType: LinkType,
         public createChapterLink: boolean
-    ) {}
+    ) {
+        super();
+    }
 
     public getReplacement(): string {
         // const url = this.getUrl();
@@ -43,7 +44,7 @@ export class VerseSuggestion {
             } else if (linktype == LinkType.markdown) {
                 // Markdown style link with spaces encoded as %20
                 const encodedBookChapter = encodeURIComponent(
-                    `${this.book_title_in_language}`
+                    this.book_title_in_language
                 );
                 const headerFront = `[${this.book_title_in_language}:${range}](${encodedBookChapter})`;
                 const head = `> [!Mormon] ${headerFront} \n [churchofjesuschrist.org](${this.url})`;
@@ -117,7 +118,6 @@ export class VerseSuggestion {
         [this.book_title_short, this.volume_title_short] =
             this.getShortenedName(this.book);
         this.url = this.getUrl();
-
         let scriptdata: ScriptureData = await fetchScripture(this.url, "GET");
         this.book_title_in_language = scriptdata.in_language_book;
         this.chapter_data.push(scriptdata);
@@ -126,10 +126,6 @@ export class VerseSuggestion {
         this.previewText = this.toPreviewText(this.verses);
     }
 
-    public render(el: HTMLElement): void {
-        const outer = el.createDiv({ cls: "obr-suggester-container" });
-        outer.createDiv({ cls: "obr-shortcode" }).setText(this.previewText);
-    }
     public formatNumberList(numbers: number[]): string {
         if (numbers.length === 0) return "";
 

@@ -8,13 +8,14 @@ import {
 } from "obsidian";
 import GospelNotebookPlugin from "src/main";
 import { VerseSuggestion } from "../suggestions/VerseSuggestion";
+import { Suggester } from "./suggester";
 
 const VERSE_REG = /\:MC.*;/i;
 const FULL_VERSE_REG = /\:MC ([123]*[A-z ]{3,}) (\d{1,3}):(.*);/i;
 
-export class VerseSuggester extends EditorSuggest<VerseSuggestion> {
+export class VerseSuggester extends Suggester<VerseSuggestion> {
     constructor(public plugin: GospelNotebookPlugin) {
-        super(plugin.app);
+        super(plugin);
     }
 
     onTrigger(
@@ -64,23 +65,6 @@ export class VerseSuggester extends EditorSuggest<VerseSuggestion> {
         );
         await suggestion.loadVerse();
         return [suggestion];
-    }
-
-    renderSuggestion(suggestion: VerseSuggestion, el: HTMLElement): void {
-        suggestion.render(el);
-    }
-
-    selectSuggestion(
-        suggestion: VerseSuggestion,
-        _evt: MouseEvent | KeyboardEvent
-    ): void {
-        if (!this.context) return;
-
-        this.context.editor.replaceRange(
-            suggestion.getReplacement(),
-            this.context.start,
-            this.context.end
-        );
     }
 
     expandRange(range: string): number[] {

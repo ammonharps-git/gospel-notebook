@@ -8,15 +8,16 @@ import {
 } from "obsidian";
 import GospelNotebookPlugin from "src/main";
 import { GenConSuggestion } from "../suggestions/GenConSuggestion";
+import { Suggester } from "./suggester";
 
 const GEN_CON_CITE_REG =
     /\:MC https:\/\/www\.churchofjesuschrist\.org\/study\/general-conference\/\d{1,4}\/\d{1,2}\/[\w-]+\?lang=\w+/;
 const GEN_CON_REG =
     /\:MC https:\/\/www\.churchofjesuschrist\.org\/study\/general-conference\/\d{1,4}\/\d{1,3}\/[\w-]+(\?lang=[a-zA-Z]+&id=[a-zA-Z0-9-]+#[a-zA-Z0-9-]+)?/;
 
-export class GenConSuggester extends EditorSuggest<GenConSuggestion> {
+export class GenConSuggester extends Suggester<GenConSuggestion> {
     constructor(public plugin: GospelNotebookPlugin) {
-        super(plugin.app);
+        super(plugin);
     }
 
     onTrigger(
