@@ -8,7 +8,6 @@ import { Suggestion } from "./Suggestion";
 
 export class VerseSuggestion extends Suggestion {
     public text: string;
-    public previewText: string;
     public chapter_data: ScriptureData[];
     private bookdata: BookData = book_data;
     private book_title_short: string;
@@ -123,7 +122,7 @@ export class VerseSuggestion extends Suggestion {
         this.chapter_data.push(scriptdata);
         this.getVerses();
         this.text = this.toText(this.verses);
-        this.previewText = this.toPreviewText(this.verses);
+        this.preview = this.toPreviewText(this.verses);
     }
 
     public formatNumberList(numbers: number[]): string {

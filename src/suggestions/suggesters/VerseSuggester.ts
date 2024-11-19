@@ -10,12 +10,28 @@ import GospelNotebookPlugin from "src/GospelNotebookPlugin";
 import { VerseSuggestion } from "../suggestions/VerseSuggestion";
 import { Suggester } from "./Suggester";
 
-const VERSE_REG = /\:MC.*;/i;
-const FULL_VERSE_REG = /\:MC ([123]*[A-z ]{3,}) (\d{1,3}):(.*);/i;
-
 export class VerseSuggester extends Suggester<VerseSuggestion> {
     constructor(public plugin: GospelNotebookPlugin) {
         super(plugin);
+    }
+
+    // fetch trigger to look for from settings but delimit it with backslashes to prevent unwantd RegEx behavior
+    getTrigger() {
+        const trigger: string = this.plugin.settings.calloutTrigger
+            ? "\\" + this.plugin.settings.calloutTrigger.split("").join("\\")
+            : "";
+        return trigger;
+    }
+
+    getVerseReg(flags: string) {
+        return new RegExp(`${this.getTrigger()}.*;`, flags);
+    }
+
+    getFullVerseReg(flags: string) {
+        return new RegExp(
+            `${this.getTrigger()}([1234]*[A-Za-z ]{3,}) (\\d{1,3}):(.*);`,
+            flags
+        );
     }
 
     onTrigger(
@@ -26,9 +42,18 @@ export class VerseSuggester extends Suggester<VerseSuggestion> {
         const currentContent = editor
             .getLine(cursor.line)
             .substring(0, cursor.ch);
-        const match = currentContent.match(VERSE_REG)?.[0] ?? "";
+        const match = currentContent.match(this.getVerseReg("i"))?.[0] ?? "";
 
-        if (!match) return null;
+        if (!match) {
+            console.debug(
+                '"' +
+                    currentContent +
+                    '" didn\'t match "' +
+                    this.getVerseReg("i") +
+                    '"'
+            );
+            return null;
+        }
 
         return {
             start: {
@@ -46,7 +71,7 @@ export class VerseSuggester extends Suggester<VerseSuggestion> {
         const { language, linkType, createChapterLink } = this.plugin.settings;
         const { query } = context;
 
-        const fullMatch = query.match(FULL_VERSE_REG);
+        const fullMatch = query.match(this.getFullVerseReg("i"));
 
         if (fullMatch === null) return [];
 
