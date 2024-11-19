@@ -6,9 +6,9 @@ import {
     EditorSuggestTriggerInfo,
     TFile,
 } from "obsidian";
-import GospelNotebookPlugin from "src/main";
+import GospelNotebookPlugin from "src/GospelNotebookPlugin";
 import { VerseSuggestion } from "../suggestions/VerseSuggestion";
-import { Suggester } from "./suggester";
+import { Suggester } from "./Suggester";
 
 const VERSE_REG = /\:MC.*;/i;
 const FULL_VERSE_REG = /\:MC ([123]*[A-z ]{3,}) (\d{1,3}):(.*);/i;

@@ -8,8 +8,9 @@ import {
     TFile,
 } from "obsidian";
 import { Suggestion } from "../suggestions/Suggestion";
-import GospelNotebookPlugin from "src/main";
-import { BOOK_ABBREVIATION_MAPPING } from "src/lang";
+import GospelNotebookPlugin from "src/GospelNotebookPlugin";
+import { BOOK_ABBREVIATION_MAPPING } from "src/utils/lang";
+
 export abstract class Suggester<T extends Suggestion> extends EditorSuggest<T> {
     constructor(public plugin: GospelNotebookPlugin) {
         super(plugin.app);

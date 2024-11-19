@@ -6,9 +6,9 @@ import {
     EditorSuggestTriggerInfo,
     EditorSuggestContext,
 } from "obsidian";
-import GospelNotebookPlugin from "src/main";
+import GospelNotebookPlugin from "src/GospelNotebookPlugin";
 import { GenConSuggestion } from "../suggestions/GenConSuggestion";
-import { Suggester } from "./suggester";
+import { Suggester } from "./Suggester";
 
 const GEN_CON_CITE_REG =
     /\:MC https:\/\/www\.churchofjesuschrist\.org\/study\/general-conference\/\d{1,4}\/\d{1,2}\/[\w-]+\?lang=\w+/;

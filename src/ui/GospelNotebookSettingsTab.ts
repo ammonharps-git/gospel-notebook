@@ -5,15 +5,15 @@ import {
     PluginSettingTab,
     Setting,
 } from "obsidian";
-import GospelNotebookPlugin from "../main";
+import GospelNotebookPlugin from "../GospelNotebookPlugin";
 import {
     AVAILABLE_LANGUAGES,
     LANGUAGE_MAPPING,
     AvailableLanguage,
-} from "../lang";
-import { CalloutCollapseType, LinkType } from "src/settings";
+} from "../utils/lang";
+import { CalloutCollapseType, LinkType } from "src/utils/settings";
 
-export class BookOfMormonSettingTab extends PluginSettingTab {
+export class GospelNotebookSettingsTab extends PluginSettingTab {
     constructor(app: App, public plugin: GospelNotebookPlugin) {
         super(app, plugin);
     }

@@ -1,8 +1,8 @@
-import { LinkType } from "src/settings";
-import { AvailableLanguage } from "../../lang";
-import { BookData, ScriptureData, Verse } from "../../types";
-import { book_data } from "src/utils/config";
-import { fetchScripture } from "src/utils/scripture";
+import { LinkType } from "src/utils/settings";
+import { AvailableLanguage } from "../../utils/lang";
+import { BookData, ScriptureData, Verse } from "../../utils/types";
+import { book_data } from "src/data_access/config";
+import { fetchScripture } from "src/data_access/scripture";
 import { Suggestion } from "./Suggestion";
 // import {App} from "obsidian"
 

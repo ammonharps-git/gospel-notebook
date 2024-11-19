@@ -1,7 +1,7 @@
-import { GenConTalkData } from "src/types";
-import { fetchGenConTalk } from "src/utils/generalconference";
+import { GenConTalkData } from "src/utils/types";
+import { fetchGenConTalk } from "src/data_access/generalconference";
 import { format, parse } from "date-fns";
-import { LinkType } from "src/settings";
+import { LinkType } from "src/utils/settings";
 import { Suggestion } from "./Suggestion";
 
 export class GenConSuggestion extends Suggestion {
