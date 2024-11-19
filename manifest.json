@@ -1,10 +1,10 @@
 {
     "id": "lds-library-reference",
     "name": "LDS Library Reference",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "minAppVersion": "0.15.0",
     "description": "Easily insert references to scripture and conference talks from the Church of Jesus Christ of Latter-day Saints",
-    "author": "pacokwon, ingiestein",
-    "authorUrl": "https://github.com/ingiestein",
+    "author": "pacokwon, ingiestein, ammonharps-git",
+    "authorUrl": "https://github.com/ammonharps-git/gospel-notebook",
     "isDesktopOnly": false
 }

@@ -1,5 +1,6 @@
-import { AvailableLanguage } from "../lang";
-import { BookData, ScriptureData, Verse } from "../types";
+import { LinkType } from "src/settings";
+import { AvailableLanguage } from "../../lang";
+import { BookData, ScriptureData, Verse } from "../../types";
 import { book_data } from "src/utils/config";
 import { fetchScripture } from "src/utils/scripture";
 // import {App} from "obsidian"
@@ -23,26 +24,26 @@ export class VerseSuggestion {
         public chapter: number,
         public vers: number[],
         public lang: AvailableLanguage,
-        public linkType: "wiki" | "markdown",
-        public createChapterLink: boolean,
+        public linkType: LinkType,
+        public createChapterLink: boolean
     ) {}
 
     public getReplacement(): string {
         // const url = this.getUrl();
         let linktype = this.linkType;
-        let range = this.formatNumberList(this.vers)
+        let range = this.formatNumberList(this.vers);
 
         if (this.createChapterLink) {
-            if (linktype == "wiki") {
+            if (linktype == LinkType.wiki) {
                 // Wiki style link to chapter document and outside URL
                 // const headerFront = `[[${this.book_title_in_language} ${this.chapter}|${this.book_title_in_language} ${this.chapter}:${range}]]`;
                 const headerFront = `[[${this.book_title_in_language}|${this.book_title_in_language}:${range}]]`;
                 const head = `> [!Mormon] ${headerFront} \n [churchofjesuschrist.org](${this.url})`;
                 return head + "\n" + this.text + "\n";
-            } else if (linktype == "markdown") {
+            } else if (linktype == LinkType.markdown) {
                 // Markdown style link with spaces encoded as %20
                 const encodedBookChapter = encodeURIComponent(
-                    `${this.book_title_in_language}`,
+                    `${this.book_title_in_language}`
                 );
                 const headerFront = `[${this.book_title_in_language}:${range}](${encodedBookChapter})`;
                 const head = `> [!Mormon] ${headerFront} \n [churchofjesuschrist.org](${this.url})`;
@@ -64,7 +65,9 @@ export class VerseSuggestion {
         this.verses = [];
 
         for (const index in this.vers) {
-            let verse_text = this.chapter_data[0].verses.get(`p${this.vers[index]}`);
+            let verse_text = this.chapter_data[0].verses.get(
+                `p${this.vers[index]}`
+            );
             let verse: Verse = {
                 volume_title: "", // Assuming you have these properties in your class
                 volume_title_short: this.volume_title_short, // Assuming you have these properties in your class
@@ -83,18 +86,18 @@ export class VerseSuggestion {
 
     private toText(verses: Verse[]): string {
         return verses
-        .map(
-            ({ verse_number, scripture_text }) =>
-                `> ${verse_number} ${scripture_text}`,
-        )
-        .join("\n");
+            .map(
+                ({ verse_number, scripture_text }) =>
+                    `> ${verse_number} ${scripture_text}`
+            )
+            .join("\n");
     }
 
     private toPreviewText(verses: Verse[]): string {
         return verses
             .map(
                 ({ verse_number, scripture_text }) =>
-                    `${verse_number}. ${scripture_text}`,
+                    `${verse_number}. ${scripture_text}`
             )
             .join("\n");
     }
@@ -116,7 +119,7 @@ export class VerseSuggestion {
         this.url = this.getUrl();
 
         let scriptdata: ScriptureData = await fetchScripture(this.url, "GET");
-        this.book_title_in_language = scriptdata.in_language_book
+        this.book_title_in_language = scriptdata.in_language_book;
         this.chapter_data.push(scriptdata);
         this.getVerses();
         this.text = this.toText(this.verses);
@@ -129,14 +132,14 @@ export class VerseSuggestion {
     }
     public formatNumberList(numbers: number[]): string {
         if (numbers.length === 0) return "";
-    
+
         // Ensure the numbers are sorted
         numbers.sort((a, b) => a - b);
-    
+
         const result: string[] = [];
         let rangeStart = numbers[0];
         let rangeEnd = numbers[0];
-    
+
         for (let i = 1; i < numbers.length; i++) {
             if (numbers[i] === rangeEnd + 1) {
                 // Continue the range
@@ -152,16 +155,14 @@ export class VerseSuggestion {
                 rangeEnd = numbers[i];
             }
         }
-    
+
         // Add the last range
         if (rangeStart === rangeEnd) {
             result.push(rangeStart.toString());
         } else {
             result.push(`${rangeStart}-${rangeEnd}`);
         }
-    
+
         return result.join(", ");
     }
-
-    
 }

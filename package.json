@@ -1,6 +1,6 @@
 {
     "name": "lds-library-reference",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "description": "Easily insert references to scripture and conference talks from the Church of Jesus Christ of Latterday Saints",
     "main": "main.js",
     "scripts": {
@@ -12,9 +12,11 @@
         "lds",
         "scriptures",
         "book of mormon",
-        "obsidian"
+        "obsidian",
+        "gospel",
+        "bible"
     ],
-    "author": "pacokwon, ingiestein",
+    "author": "pacokwon, ingiestein, ammonharps-git",
     "license": "MIT",
     "devDependencies": {
         "@types/node": "^16.11.6",

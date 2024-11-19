@@ -1,0 +1,46 @@
+import {
+    Editor,
+    EditorPosition,
+    EditorSuggest,
+    EditorSuggestContext,
+    EditorSuggestTriggerInfo,
+    Plugin,
+    TFile,
+} from "obsidian";
+import { Suggestion } from "../suggestions/Suggestion";
+import GospelNotebookPlugin from "src/main";
+import { BOOK_ABBREVIATION_MAPPING } from "src/lang";
+export abstract class Suggester<T extends Suggestion> extends EditorSuggest<T> {
+    constructor(public plugin: GospelNotebookPlugin) {
+        super(plugin.app);
+    }
+
+    abstract onTrigger(
+        cursor: EditorPosition,
+        editor: Editor,
+        _file: TFile | null
+    ): EditorSuggestTriggerInfo | null;
+
+    abstract getSuggestions(context: EditorSuggestContext): T[] | Promise<T[]>;
+
+    protected containsNonWhitespace(content: string) {
+        const hasNonWhitespace: number = content.search(/\s*\S+/);
+        if (hasNonWhitespace === -1) {
+            return false;
+        }
+        return true;
+    }
+
+    protected getBookNme(abbreviation: string) {
+        let bookName: string = abbreviation;
+        if (!!BOOK_ABBREVIATION_MAPPING[this.plugin.settings.language]) {
+            const possibleName = BOOK_ABBREVIATION_MAPPING[
+                this.plugin.settings.language
+            ]?.get(abbreviation.toLowerCase());
+            if (!!possibleName) {
+                bookName = possibleName;
+            }
+        }
+        return bookName;
+    }
+}
