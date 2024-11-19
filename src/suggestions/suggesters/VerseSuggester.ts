@@ -10,26 +10,27 @@ import GospelNotebookPlugin from "src/GospelNotebookPlugin";
 import { VerseSuggestion } from "../suggestions/VerseSuggestion";
 import { Suggester } from "./Suggester";
 
+// TODO need to rewrite RegEx to remove the need for ';' at the end
+// use one large capture group to capture everything after the chapter colon ':' but RegEx match it using repeating non-capturing groups
+// Use the large capture group to parse the verses, but the full regex to make sure pattern matches without the need for ';'
+// Could also implement this as a "endTrigger" in settings exactly like the initial trigger so people can have optional setting to use a dynamic closing trigger.
+
 export class VerseSuggester extends Suggester<VerseSuggestion> {
     constructor(public plugin: GospelNotebookPlugin) {
         super(plugin);
     }
 
     // fetch trigger to look for from settings but delimit it with backslashes to prevent unwantd RegEx behavior
-    getTrigger() {
-        const trigger: string = this.plugin.settings.calloutTrigger
-            ? "\\" + this.plugin.settings.calloutTrigger.split("").join("\\")
+    private getVerseTrigger() {
+        const trigger: string = this.plugin.settings.verseTrigger
+            ? "\\" + this.plugin.settings.verseTrigger.split("").join("\\")
             : "";
         return trigger;
     }
 
-    getVerseReg(flags: string) {
-        return new RegExp(`${this.getTrigger()}.*;`, flags);
-    }
-
-    getFullVerseReg(flags: string) {
+    private getVerseReg(flags: string) {
         return new RegExp(
-            `${this.getTrigger()}([1234]*[A-Za-z ]{3,}) (\\d{1,3}):(.*);`,
+            `${this.getVerseTrigger()}([1234]*[A-Za-z ]{3,}) (\\d{1,3}):(.*);`,
             flags
         );
     }
@@ -43,17 +44,15 @@ export class VerseSuggester extends Suggester<VerseSuggestion> {
             .getLine(cursor.line)
             .substring(0, cursor.ch);
         const match = currentContent.match(this.getVerseReg("i"))?.[0] ?? "";
+        if (!match) return null;
 
-        if (!match) {
-            console.debug(
-                '"' +
-                    currentContent +
-                    '" didn\'t match "' +
-                    this.getVerseReg("i") +
-                    '"'
-            );
-            return null;
-        }
+        // Check for leading non-whitespace characters (the user has continued typing) and cancel trigger if found
+        const foundWhitespace = this.containsNonWhitespace(
+            currentContent.substring(
+                currentContent.lastIndexOf(match) + match.length
+            )
+        );
+        if (foundWhitespace) return null;
 
         return {
             start: {
@@ -71,7 +70,7 @@ export class VerseSuggester extends Suggester<VerseSuggestion> {
         const { language, linkType, createChapterLink } = this.plugin.settings;
         const { query } = context;
 
-        const fullMatch = query.match(this.getFullVerseReg("i"));
+        const fullMatch = query.match(this.getVerseReg("i"));
 
         if (fullMatch === null) return [];
 
@@ -92,7 +91,7 @@ export class VerseSuggester extends Suggester<VerseSuggestion> {
         return [suggestion];
     }
 
-    expandRange(range: string): number[] {
+    private expandRange(range: string): number[] {
         const [s, e] = range.split("-");
 
         let start = Number(s.trim());
@@ -106,7 +105,7 @@ export class VerseSuggester extends Suggester<VerseSuggestion> {
         return result;
     }
 
-    parseVerses(input: string): number[] {
+    private parseVerses(input: string): number[] {
         const items = input.split(",");
         let result: number[] = [];
 

@@ -17,7 +17,7 @@ export interface GospelNotebookSettings {
     createChapterLink: boolean;
     bidirectionalLinks: boolean;
     calloutCollapseType: CalloutCollapseType;
-    calloutTrigger: string;
+    verseTrigger: string;
     toggleInvisibleLinks: boolean;
 }
 
@@ -27,6 +27,6 @@ export const DEFAULT_SETTINGS: GospelNotebookSettings = {
     createChapterLink: false,
     bidirectionalLinks: false,
     calloutCollapseType: CalloutCollapseType.Expanded,
-    calloutTrigger: "+",
+    verseTrigger: "+",
     toggleInvisibleLinks: true,
 };

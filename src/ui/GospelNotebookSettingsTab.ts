@@ -13,6 +13,8 @@ import {
 } from "../utils/lang";
 import { CalloutCollapseType, LinkType } from "src/utils/settings";
 
+// TODO clean up settings and divide into three tabs: Scriptures, References, and General Conference quotes
+
 export class GospelNotebookSettingsTab extends PluginSettingTab {
     constructor(app: App, public plugin: GospelNotebookPlugin) {
         super(app, plugin);
@@ -59,14 +61,14 @@ export class GospelNotebookSettingsTab extends PluginSettingTab {
             });
     }
 
-    setCalloutTrigger(containerEl: HTMLElement) {
-        let initialValue = this.plugin.settings.calloutTrigger;
+    setVerseTrigger(containerEl: HTMLElement) {
+        let initialValue = this.plugin.settings.verseTrigger;
         let textAreaValue: string = initialValue;
         let button: ButtonComponent;
         new Setting(containerEl)
-            .setName("Callout Trigger")
+            .setName("Verse Callout Trigger")
             .setDesc(
-                'The callout trigger is the character or string that preceeds a scripture reference in order for a scripture callout to be suggested to you. For example, if the callout trigger were "+" (the addition symbol), then a scripture callout would be suggested if you typed "+Matthew 5:48", "+1 Nephi 3:7", or "+" followed by any other scripture reference. Be careful to not include any unintentional leading or trailing spaces, as they will be counted as part of the trigger.'
+                'The verse callout trigger is the character or string that preceeds a scripture reference in order for a scripture callout to be suggested to you. For example, if the callout trigger were "+" (the addition symbol), then a scripture callout would be suggested if you typed "+Matthew 5:48", "+1 Nephi 3:7", or "+" followed by any other scripture reference. Be careful to not include any unintentional leading or trailing spaces, as they will be counted as part of the trigger.'
             )
             .addTextArea((textArea) => {
                 textArea.setValue(textAreaValue).onChange((value: string) => {
@@ -80,7 +82,7 @@ export class GospelNotebookSettingsTab extends PluginSettingTab {
                     .setDisabled(true)
                     .setButtonText("Save")
                     .onClick(async () => {
-                        this.plugin.settings.calloutTrigger = textAreaValue;
+                        this.plugin.settings.verseTrigger = textAreaValue;
                         await this.plugin.saveSettings();
                         new Notice("Callout Trigger Updated");
                         initialValue = textAreaValue;
@@ -91,9 +93,9 @@ export class GospelNotebookSettingsTab extends PluginSettingTab {
 
     toggleInvisibleLinks(containerEl: HTMLElement) {
         new Setting(containerEl)
-            .setName("Insert Invisible Links")
+            .setName("Insert Invisible Markdown Links")
             .setDesc(
-                "If this setting is on, whenever a scripture link or callout is inserted, an invisible link to a Markdown copy of the scripture is also inserted. The Markdown file is assumed to have the same name as the scripture reference. This is useful for visualizing your scripture cross-references within Obsidian Graph Views."
+                'If this setting is on, whenever a scripture link or callout is inserted, an invisible link to a Markdown copy of the scripture is also inserted. The Markdown file is assumed to be named according to the chapter of the scripture reference (Ex: "1 Nephi 3:7" would create a link to "1 Nephi 3.md"). This is useful for visualizing your scripture cross-references within Obsidian Graph Views but still allows you to link the scriptures to the official Church website without the need to see two references.'
             )
             .addToggle((textArea) => {
                 textArea
@@ -124,12 +126,14 @@ export class GospelNotebookSettingsTab extends PluginSettingTab {
             );
         new Setting(containerEl)
             .setName("Link type")
-            .setDesc("Choose the type of link to create.")
+            .setDesc(
+                "Choose the type of link to create when inserting scriptures or references."
+            )
             .addDropdown((dropdown) =>
                 dropdown
                     // .addOption('default', 'Default')
-                    .addOption("wiki", "Wiki Link")
-                    .addOption("markdown", "Markdown Link")
+                    .addOption(LinkType.wiki, "Wiki Link")
+                    .addOption(LinkType.markdown, "Markdown Link")
                     .setValue(this.plugin.settings.linkType)
                     .onChange(async (value: LinkType) => {
                         this.plugin.settings.linkType = value;
@@ -142,16 +146,16 @@ export class GospelNotebookSettingsTab extends PluginSettingTab {
         const { containerEl } = this;
         containerEl.empty();
 
-        containerEl.createEl("h1", { text: "Study Journal Settings" });
+        containerEl.createEl("h1", { text: "Gospel Notebook Settings" });
         this.setupLanguageOption(containerEl);
         this.setupLinkOption(containerEl);
         this.setCalloutCollapseOption(containerEl);
-        this.setCalloutTrigger(containerEl);
+        this.setVerseTrigger(containerEl);
         this.toggleInvisibleLinks(containerEl);
 
         containerEl.createEl("h2", { text: "About" });
         containerEl.createSpan({}, (span) => {
-            span.innerHTML = `<a href="https://github.com/ammonharps-git/scripture-study-journal">Click Here</a> to view the Github documentation for this plugin.`;
+            span.innerHTML = `<a href="https://github.com/ammonharps-git/gospel-notebook">Click Here</a> to view the Github documentation for this plugin.`;
         });
     }
 }
