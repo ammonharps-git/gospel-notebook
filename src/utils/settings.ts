@@ -6,34 +6,41 @@ export enum CalloutCollapseType {
     NonCollapsable = "",
 }
 
+export enum LinkFormat {
+    Wiki = "wiki",
+    Markdown = "markdown",
+}
+
 export enum LinkType {
-    wiki = "wiki",
-    markdown = "markdown",
+    ChurchWebsite = "Church Website",
+    InternalMarkdown = "Internal Markdown",
 }
 
 export enum CalloutStyle {
-    classic = "Mormon",
-    stylized = "Stylized",
+    Classic = "Mormon",
+    Stylized = "Stylized",
 }
 
 export interface GospelNotebookSettings {
     language: AvailableLanguage;
-    linkType: LinkType; // I want to add program default as an option, but not sure how to yet.
+    linkFormat: LinkFormat; // I want to add program default as an option, but not sure how to yet.
+    linkType: LinkType;
     createChapterLink: boolean;
     bidirectionalLinks: boolean;
-    calloutCollapseType: CalloutCollapseType;
+    verseCollapseType: CalloutCollapseType;
     verseTrigger: string;
     toggleInvisibleLinks: boolean;
-    calloutStyle: CalloutStyle;
+    verseStyle: CalloutStyle;
 }
 
 export const DEFAULT_SETTINGS: GospelNotebookSettings = {
     language: "eng",
-    linkType: LinkType.wiki,
+    linkFormat: LinkFormat.Markdown,
+    linkType: LinkType.ChurchWebsite,
     createChapterLink: false,
     bidirectionalLinks: false,
-    calloutCollapseType: CalloutCollapseType.Expanded,
+    verseCollapseType: CalloutCollapseType.Expanded,
     verseTrigger: "+",
     toggleInvisibleLinks: true,
-    calloutStyle: CalloutStyle.classic,
+    verseStyle: CalloutStyle.Classic,
 };

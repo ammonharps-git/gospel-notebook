@@ -1,4 +1,8 @@
-import { CalloutStyle, LinkType } from "src/utils/settings";
+import {
+    CalloutStyle,
+    LinkFormat as LinkFormat,
+    LinkType,
+} from "src/utils/settings";
 import { AvailableLanguage } from "../../utils/lang";
 import { BookData, ScriptureData, Verse } from "../../utils/types";
 import { book_data } from "src/data_access/config";
@@ -8,6 +12,7 @@ import { Suggestion } from "./Suggestion";
 // TODO clean up this class by removing unneeded variables and examine how data is being stored and handled
 // TODO Consolodate data access to the plugin level using DAO for improved layered architecture that is only dependent on abstractions rather than implementations
 // TODO maybe refactor all data access to the Suggester layer? That would decrease dependencies and more closely follow Single Responsibility Principle
+// TODO make verse content display as an ordered list rather than just plain text
 
 export class VerseSuggestion extends Suggestion {
     public text: string;
@@ -24,40 +29,57 @@ export class VerseSuggestion extends Suggestion {
         public pluginName: string,
         public book: string,
         public chapter: number,
-        public vers: number[], // TODO avoid primative obsession
+        public vers: number[], // FIXME avoid primative obsession
         public lang: AvailableLanguage,
         public linkType: LinkType,
-        public createChapterLink: boolean
+        public linkFormat: LinkFormat,
+        public createChapterLink: boolean,
+        public invisibleLink: boolean
     ) {
         super();
     }
 
     public getReplacement(): string {
-        let linktype = this.linkType;
+        // let linkFormat = this.linkFormat;
         let range = this.formatNumberList(this.vers);
 
-        if (this.createChapterLink) {
-            if (linktype == LinkType.wiki) {
-                // Wiki style link to chapter document and outside URL
-                // const headerFront = `[[${this.book_title_in_language} ${this.chapter}|${this.book_title_in_language} ${this.chapter}:${range}]]`;
-                const headerFront = `[[${this.book_title_in_language}|${this.book_title_in_language}:${range}]]`;
-                const head = `> [!${this.calloutStyle}] ${headerFront} \n [churchofjesuschrist.org](${this.url})`;
-                return head + "\n" + this.text + "\n";
-            } else if (linktype == LinkType.markdown) {
-                // Markdown style link with spaces encoded as %20
-                const encodedBookChapter = encodeURIComponent(
-                    this.book_title_in_language
-                );
-                const headerFront = `[${this.book_title_in_language}:${range}](${encodedBookChapter})`;
-                const head = `> [!${this.calloutStyle}] ${headerFront} \n [churchofjesuschrist.org](${this.url})`;
-                return head + "\n" + this.text + "\n";
-            }
+        // if (this.createChapterLink) {
+        //     if (linkFormat == LinkFormat.Wiki) {
+        //         // Wiki style link to chapter document and outside URL
+        //         const headerFront = `[[${this.book_title_in_language}|${this.book_title_in_language}:${range}]]`;
+        //         const head = `> [!${this.calloutStyle}] ${headerFront} \n [churchofjesuschrist.org](${this.url})`;
+        //         return head + "\n" + this.text + "\n";
+        //     } else if (linkFormat == LinkFormat.Markdown) {
+        //         // Markdown style link with spaces encoded as %20
+        //         const encodedBookChapter = encodeURIComponent(
+        //             this.book_title_in_language
+        //         );
+        //         const headerFront = `[${this.book_title_in_language}:${range}](${encodedBookChapter})`;
+        //         const head = `> [!${this.calloutStyle}] ${headerFront} \n [churchofjesuschrist.org](${this.url})`;
+        //         return head + "\n" + this.text + "\n";
+        //     }
+        // }
+
+        let header: string;
+        if (this.linkType == LinkType.ChurchWebsite) {
+            const invisibleLink = this.invisibleLink
+                ? ""
+                : this.linkFormat == LinkFormat.Markdown
+                ? `[[${this.book_title_in_language}|]]`
+                : `[](${encodeURIComponent(this.book_title_in_language)})`;
+
+            header = `[${this.book_title_in_language}:${range}](${this.url}) ${invisibleLink}`;
+        } else if (this.linkType == LinkType.InternalMarkdown) {
+            header = `[[${this.book_title_in_language}|${this.book_title_in_language}:${range}]]`;
+        } else {
+            throw new Error("Invalid LinkType: " + this.linkType);
         }
+        return `> [!${this.calloutStyle}] ${header}\n${this.text}\n`;
 
         // Normal function
-        const headerFront = `${this.book_title_in_language}:`;
-        const head = `> [!${this.calloutStyle}] [${headerFront}${range}](${this.url})`;
-        return head + "\n" + this.text + "\n";
+        // const headerFront = `${this.book_title_in_language}:`;
+        // const head = `> [!${this.calloutStyle}] [${headerFront}${range}](${this.url})`;
+        // return head + "\n" + this.text + "\n";
     }
 
     private getUrl(): string {
@@ -88,12 +110,31 @@ export class VerseSuggestion extends Suggestion {
     }
 
     private toText(verses: Verse[]): string {
-        return verses
-            .map(
-                ({ verse_number, scripture_text }) =>
-                    `> ${verse_number} ${scripture_text}`
-            )
-            .join("\n");
+        const referenceText: String[] = [];
+        let lastVerseNum = 0;
+        for (let i = 0; i < verses.length; i++) {
+            let verseText = "";
+            const verseNum = verses[i].verse_number;
+            const scriptureText = verses[i].scripture_text;
+            if (i == 0) {
+                verseText += `<ol start="${verseNum}">`;
+            } else if (lastVerseNum + 1 != verseNum) {
+                verseText += `</ol><ol start="${verseNum}">`;
+            }
+            lastVerseNum = verseNum;
+            verseText += `<li>${scriptureText}</li>`;
+            if (i == verses.length - 1) {
+                verseText += "</ol>";
+            }
+            referenceText.push(verseText);
+        }
+        // verses
+        //     .map(
+        //         ({ verse_number, scripture_text }) =>
+        //             `> ${verse_number} ${scripture_text}`
+        //     )
+        //     .join("\n");
+        return "> " + referenceText.join("");
     }
 
     private toPreviewText(verses: Verse[]): string {

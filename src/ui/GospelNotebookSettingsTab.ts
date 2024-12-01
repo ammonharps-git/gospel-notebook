@@ -1,9 +1,11 @@
 import {
     App,
     ButtonComponent,
+    DropdownComponent,
     Notice,
     PluginSettingTab,
     Setting,
+    ToggleComponent,
 } from "obsidian";
 import GospelNotebookPlugin from "../GospelNotebookPlugin";
 import {
@@ -12,8 +14,9 @@ import {
     AvailableLanguage,
 } from "../utils/lang";
 import {
-    CalloutCollapseType,
-    CalloutStyle,
+    CalloutCollapseType as VerseCollapseType,
+    CalloutStyle as VerseStyle,
+    LinkFormat,
     LinkType,
 } from "src/utils/settings";
 
@@ -42,51 +45,51 @@ export class GospelNotebookSettingsTab extends PluginSettingTab {
             });
     }
 
-    setCalloutOptions(containerEl: HTMLElement) {
+    setVerseOptions(containerEl: HTMLElement) {
+        // Verse Collapsability
         new Setting(containerEl)
-            .setName("Default Callout Collapsability")
+            .setName("Verse Collapsability")
             .setDesc(
-                "When inserting a scripture, this determines if the callout block will be expanded, collapsed, or non-collapsable by default."
+                "When inserting a scripture, this determines if the verse callout block will be expanded, collapsed, or non-collapsable by default."
             )
             .addDropdown((dropdown) => {
-                dropdown.addOption(CalloutCollapseType.Collapsed, "Collapsed");
-                dropdown.addOption(CalloutCollapseType.Expanded, "Expanded");
+                dropdown.addOption(VerseCollapseType.Collapsed, "Collapsed");
+                dropdown.addOption(VerseCollapseType.Expanded, "Expanded");
                 dropdown.addOption(
-                    CalloutCollapseType.NonCollapsable,
+                    VerseCollapseType.NonCollapsable,
                     "Non-Collapsable"
                 );
                 dropdown
-                    .setValue(this.plugin.settings.calloutCollapseType)
-                    .onChange(async (value: CalloutCollapseType) => {
-                        this.plugin.settings.calloutCollapseType = value;
+                    .setValue(this.plugin.settings.verseCollapseType)
+                    .onChange(async (value: VerseCollapseType) => {
+                        this.plugin.settings.verseCollapseType = value;
                         await this.plugin.saveSettings();
-                        new Notice("Default Callout Collapsability Updated");
+                        new Notice("Verse Collapsability Updated");
                     });
             });
+        // Verse Style
         new Setting(containerEl)
-            .setName("Callout Style")
+            .setName("Verse Style")
             .setDesc(
-                "Choose between classic Obisidian or custom callout styles for scriptures."
+                "Choose between classic Obisidian or custom callout styles for inserted verses."
             )
             .addDropdown((dropdown) => {
-                dropdown.addOption(CalloutStyle.classic, "Classic");
-                dropdown.addOption(CalloutStyle.stylized, "Stylized");
+                dropdown.addOption(VerseStyle.Classic, "Classic");
+                dropdown.addOption(VerseStyle.Stylized, "Stylized");
                 dropdown
-                    .setValue(this.plugin.settings.calloutStyle)
-                    .onChange(async (value: CalloutStyle) => {
-                        this.plugin.settings.calloutStyle = value;
+                    .setValue(this.plugin.settings.verseStyle)
+                    .onChange(async (value: VerseStyle) => {
+                        this.plugin.settings.verseStyle = value;
                         await this.plugin.saveSettings();
-                        new Notice("Callout Style Updated");
+                        new Notice("Verse Style Updated");
                     });
             });
-    }
-
-    setVerseTrigger(containerEl: HTMLElement) {
+        // Verse Trigger
         let initialValue = this.plugin.settings.verseTrigger;
         let textAreaValue: string = initialValue;
         let button: ButtonComponent;
         new Setting(containerEl)
-            .setName("Verse Callout Trigger")
+            .setName("Verse Trigger")
             .setDesc(
                 'The verse callout trigger is the character or string that preceeds a scripture reference in order for a scripture callout to be suggested to you. For example, if the callout trigger were "+" (the addition symbol), then a scripture callout would be suggested if you typed "+Matthew 5:48", "+1 Nephi 3:7", or "+" followed by any other scripture reference. Be careful to not include any unintentional leading or trailing spaces, as they will be counted as part of the trigger.'
             )
@@ -104,32 +107,68 @@ export class GospelNotebookSettingsTab extends PluginSettingTab {
                     .onClick(async () => {
                         this.plugin.settings.verseTrigger = textAreaValue;
                         await this.plugin.saveSettings();
-                        new Notice("Callout Trigger Updated");
+                        new Notice("Verse Trigger Updated");
                         initialValue = textAreaValue;
                         button.setDisabled(true);
                     });
             });
-    }
-
-    toggleInvisibleLinks(containerEl: HTMLElement) {
+        // Link type (Church Website vs internal Markdown)
+        new Setting(containerEl)
+            .setName("Link type")
+            .setDesc(
+                "Choose the type of link to create when inserting scriptures or references."
+            )
+            .addDropdown((dropdown) => {
+                dropdown
+                    // .addOption('default', 'Default')
+                    .addOption(
+                        LinkType.ChurchWebsite,
+                        "Church Website (Wiki Link)"
+                    )
+                    .addOption(LinkType.InternalMarkdown, "Markdown Link")
+                    .setValue(this.plugin.settings.linkType)
+                    .onChange(async (value: LinkType) => {
+                        this.plugin.settings.linkType = value;
+                        invisibleMarkdownToggle.setDisabled(
+                            this.plugin.settings.linkType ===
+                                LinkType.InternalMarkdown
+                        );
+                        if (
+                            this.plugin.settings.linkType ===
+                            LinkType.InternalMarkdown
+                        ) {
+                            invisibleMarkdownToggle.setValue(false);
+                        }
+                        await this.plugin.saveSettings();
+                        new Notice("Updated Verse Link Type");
+                    });
+            });
+        // Invisible Markdown Link
+        let invisibleMarkdownToggle: ToggleComponent;
         new Setting(containerEl)
             .setName("Insert Invisible Markdown Links")
             .setDesc(
-                'If this setting is on, whenever a scripture link or callout is inserted, an invisible link to a Markdown copy of the scripture is also inserted. The Markdown file is assumed to be named according to the chapter of the scripture reference (Ex: "1 Nephi 3:7" would create a link to "1 Nephi 3.md"). This is useful for visualizing your scripture cross-references within Obsidian Graph Views but still allows you to link the scriptures to the official Church website without the need to see two references.'
+                'Only available when "Link Type" is NOT set to Markdown. If this setting is on, whenever a scripture callout is inserted, an invisible link to a Markdown copy of the scripture is also inserted. The Markdown file is assumed to be named according to the chapter of the scripture reference (Ex: "1 Nephi 3:7" would create a link to "1 Nephi 3.md"). This is useful for visualizing your scripture cross-references within Obsidian Graph Views but still allows you to link the scriptures to the official Church website without the need to see two references.'
             )
-            .addToggle((textArea) => {
-                textArea
+            .addToggle((toggle) => {
+                invisibleMarkdownToggle = toggle;
+                invisibleMarkdownToggle
+                    .setDisabled(
+                        this.plugin.settings.linkFormat !== LinkFormat.Wiki
+                    )
                     .setValue(this.plugin.settings.toggleInvisibleLinks)
                     .onChange(async (value: boolean) => {
                         this.plugin.settings.toggleInvisibleLinks = value;
                         await this.plugin.saveSettings();
-                        new Notice("Invisible Link Settings Updated");
+                        new Notice(
+                            "Updated Invisible Link Settings for Verses"
+                        );
                     });
             });
     }
 
     setupLinkOption(containerEl: HTMLElement) {
-        //Adding additional settings which can automatically create back links so you can see which of your documents
+        // Adding additional settings which can automatically create back links so you can see which of your documents
         // and how many reference which chapters in the scriptures.
         new Setting(containerEl)
             .setName("Chapter linking")
@@ -144,22 +183,6 @@ export class GospelNotebookSettingsTab extends PluginSettingTab {
                         await this.plugin.saveSettings();
                     })
             );
-        new Setting(containerEl)
-            .setName("Link type")
-            .setDesc(
-                "Choose the type of link to create when inserting scriptures or references."
-            )
-            .addDropdown((dropdown) =>
-                dropdown
-                    // .addOption('default', 'Default')
-                    .addOption(LinkType.wiki, "Wiki Link")
-                    .addOption(LinkType.markdown, "Markdown Link")
-                    .setValue(this.plugin.settings.linkType)
-                    .onChange(async (value: LinkType) => {
-                        this.plugin.settings.linkType = value;
-                        await this.plugin.saveSettings();
-                    })
-            );
     }
 
     display() {
@@ -168,10 +191,9 @@ export class GospelNotebookSettingsTab extends PluginSettingTab {
 
         containerEl.createEl("h1", { text: "Gospel Notebook Settings" });
         this.setupLanguageOption(containerEl);
+        containerEl.createEl("h2", { text: "Verse Suggestion Settings" });
+        this.setVerseOptions(containerEl);
         this.setupLinkOption(containerEl);
-        this.setCalloutOptions(containerEl);
-        this.setVerseTrigger(containerEl);
-        this.toggleInvisibleLinks(containerEl);
 
         containerEl.createEl("h2", { text: "About" });
         containerEl.createSpan({}, (span) => {

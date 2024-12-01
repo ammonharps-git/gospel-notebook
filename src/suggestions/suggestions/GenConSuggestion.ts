@@ -1,7 +1,7 @@
 import { GenConTalkData } from "src/utils/types";
 import { fetchGenConTalk } from "src/data_access/generalconference";
 import { format, parse } from "date-fns";
-import { LinkType } from "src/utils/settings";
+import { LinkFormat } from "src/utils/settings";
 import { Suggestion } from "./Suggestion";
 
 export class GenConSuggestion extends Suggestion {
@@ -13,7 +13,7 @@ export class GenConSuggestion extends Suggestion {
     constructor(
         public pluginName: string,
         public url: string,
-        public linkType: LinkType
+        public linkType: LinkFormat
     ) {
         super();
     }

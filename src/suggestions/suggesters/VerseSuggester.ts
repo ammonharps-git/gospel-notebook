@@ -67,7 +67,14 @@ export class VerseSuggester extends Suggester<VerseSuggestion> {
     async getSuggestions(
         context: EditorSuggestContext
     ): Promise<VerseSuggestion[]> {
-        const { language, linkType, createChapterLink } = this.plugin.settings;
+        const {
+            language,
+            linkType,
+            linkFormat,
+            createChapterLink,
+            toggleInvisibleLinks,
+            verseStyle,
+        } = this.plugin.settings;
         const { query } = context;
 
         const fullMatch = query.match(this.getVerseReg("i"));
@@ -79,14 +86,16 @@ export class VerseSuggester extends Suggester<VerseSuggestion> {
         const verses: number[] = this.parseVerses(fullMatch[3]);
 
         const suggestion = new VerseSuggestion(
-            this.plugin.settings.calloutStyle,
+            verseStyle,
             this.plugin.manifest.id,
             book,
             chapter,
             verses,
             language,
             linkType,
-            createChapterLink
+            linkFormat,
+            createChapterLink,
+            toggleInvisibleLinks
         );
         await suggestion.loadVerse();
         return [suggestion];

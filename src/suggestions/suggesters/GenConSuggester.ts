@@ -49,7 +49,11 @@ export class GenConSuggester extends Suggester<GenConSuggestion> {
     ): Promise<GenConSuggestion[]> {
         const { query } = context;
         const fullMatch = query.match(GEN_CON_REG);
-        const { language, linkType, createChapterLink } = this.plugin.settings;
+        const {
+            language,
+            linkFormat: linkType,
+            createChapterLink,
+        } = this.plugin.settings;
 
         if (fullMatch === null) {
             return [];
