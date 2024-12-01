@@ -12,7 +12,6 @@ import { Suggestion } from "./Suggestion";
 // TODO clean up this class by removing unneeded variables and examine how data is being stored and handled
 // TODO Consolodate data access to the plugin level using DAO for improved layered architecture that is only dependent on abstractions rather than implementations
 // TODO maybe refactor all data access to the Suggester layer? That would decrease dependencies and more closely follow Single Responsibility Principle
-// TODO make verse content display as an ordered list rather than just plain text
 
 export class VerseSuggestion extends Suggestion {
     public text: string;
@@ -83,7 +82,11 @@ export class VerseSuggestion extends Suggestion {
     }
 
     private getUrl(): string {
-        return `https://www.churchofjesuschrist.org/study/scriptures/${this.volume_title_short}/${this.book_title_short}/${this.chapter}?lang=${this.lang}`;
+        return `https://www.churchofjesuschrist.org/study/scriptures/${
+            this.volume_title_short
+        }/${this.book_title_short}/${this.chapter}?lang=${
+            this.lang
+        }&id=p${this.vers.join(",")}#p${Math.min(...this.vers)}`;
     }
 
     private getVerses() {
@@ -93,12 +96,13 @@ export class VerseSuggestion extends Suggestion {
             let verse_text = this.chapter_data[0].verses.get(
                 `p${this.vers[index]}`
             );
+            // Attributes assumed to be in Verse class
             let verse: Verse = {
-                volume_title: "", // Assuming you have these properties in your class
-                volume_title_short: this.volume_title_short, // Assuming you have these properties in your class
-                book_title: this.book, // Assuming you have these properties in your class
-                book_title_short: this.book_title_short, // Assuming you have these properties in your class
-                chapter_number: this.chapter, // Assuming you have these properties in your class
+                volume_title: "",
+                volume_title_short: this.volume_title_short,
+                book_title: this.book,
+                book_title_short: this.book_title_short,
+                chapter_number: this.chapter,
                 verse_number: this.vers[index],
                 verse_title: "", // Set as needed
                 scripture_text: verse_text
@@ -128,12 +132,6 @@ export class VerseSuggestion extends Suggestion {
             }
             referenceText.push(verseText);
         }
-        // verses
-        //     .map(
-        //         ({ verse_number, scripture_text }) =>
-        //             `> ${verse_number} ${scripture_text}`
-        //     )
-        //     .join("\n");
         return "> " + referenceText.join("");
     }
 
