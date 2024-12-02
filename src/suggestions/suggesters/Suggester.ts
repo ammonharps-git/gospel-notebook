@@ -30,6 +30,7 @@ export abstract class Suggester<T extends Suggestion> extends EditorSuggest<T> {
     protected containsNonWhitespace(content: string) {
         const hasNonWhitespace: number = content.search(/\s*\S+/);
         if (hasNonWhitespace === -1) {
+            // String.search returns -1 if failed to find
             return false;
         }
         return true;

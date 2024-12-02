@@ -1,14 +1,15 @@
 import { GenConTalkData } from "src/utils/types";
-import { fetchGenConTalk } from "src/data_access/generalconference";
 import { format, parse } from "date-fns";
 import { LinkFormat } from "src/utils/settings";
 import { Suggestion } from "./Suggestion";
+import { GenConDAO } from "src/data_access/GenConDAO";
 
 export class GenConSuggestion extends Suggestion {
     public text: string;
     public previewText: string; //this is what's loaded by the preview thing.
     public data: GenConTalkData; //should this be an array of item? probably not.
     public date: string;
+    private dao: GenConDAO;
 
     constructor(
         public pluginName: string,
@@ -16,10 +17,11 @@ export class GenConSuggestion extends Suggestion {
         public linkType: LinkFormat
     ) {
         super();
+        this.dao = new GenConDAO();
     }
 
     private async getParagraphs(): Promise<GenConTalkData> {
-        return await fetchGenConTalk(this.url, "GET");
+        return await this.dao.fetchGenConTalk(this.url, "GET");
     }
 
     private convertDate = (dateString: string): string => {

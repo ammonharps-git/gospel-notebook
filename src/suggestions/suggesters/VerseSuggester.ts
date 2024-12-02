@@ -87,7 +87,6 @@ export class VerseSuggester extends Suggester<VerseSuggestion> {
 
         const suggestion = new VerseSuggestion(
             verseStyle,
-            this.plugin.manifest.id,
             book,
             chapter,
             verses,
