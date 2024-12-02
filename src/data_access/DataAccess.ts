@@ -90,7 +90,6 @@ export abstract class DataAccess {
 
     protected buildAPIURL(lang: string, url: string) {
         let path = this.extractURLPath(url);
-
         return (
             `https://www.churchofjesuschrist.org/study/api/v3/language-pages/type/content?lang=${lang}&uri=` +
             path

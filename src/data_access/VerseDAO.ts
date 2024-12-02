@@ -4,8 +4,6 @@ import { ScriptureData } from "../utils/types";
 import { PARAGRAPHS_IN_BODY_QUERY } from "./config";
 import { DataAccess } from "./DataAccess";
 
-// TODO refactor into class
-
 export class VerseDAO extends DataAccess {
     public async fetchScripture(
         url: string,

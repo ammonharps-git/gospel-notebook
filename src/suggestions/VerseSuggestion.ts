@@ -3,8 +3,8 @@ import {
     LinkFormat as LinkFormat,
     LinkType,
 } from "src/utils/settings";
-import { AvailableLanguage } from "../../utils/lang";
-import { BookData, ScriptureData, Verse } from "../../utils/types";
+import { AvailableLanguage } from "../utils/lang";
+import { BookData, ScriptureData, Verse } from "../utils/types";
 import { book_data } from "src/data_access/config";
 import { Suggestion } from "./Suggestion";
 import { VerseDAO } from "src/data_access/VerseDAO";

@@ -27,7 +27,7 @@ export class GenConDAO extends DataAccess {
 
         if (parsedData.pathParts[1] !== "general-conference") {
             throw new Error(
-                "This can only refernce talks from General Conference."
+                "GenConDAO can only refernce talks from General Conference."
             );
         }
 

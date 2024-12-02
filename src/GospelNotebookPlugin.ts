@@ -1,8 +1,8 @@
 import { Plugin } from "obsidian";
 import { GospelNotebookSettings, DEFAULT_SETTINGS } from "./utils/settings";
-import { VerseSuggester } from "./suggestions/suggesters/VerseSuggester";
+import { VerseSuggester } from "./suggesters/VerseSuggester";
 import { GospelNotebookSettingsTab } from "./ui/GospelNotebookSettingsTab";
-import { GenConSuggester } from "./suggestions/suggesters/GenConSuggester";
+import { GenConSuggester } from "./suggesters/GenConSuggester";
 
 // TODO Refactor CSS changes to allow for original format of obsidian plugin rather than custom style implemented in this css (option in settings)
 // // This is done by changing the callout data to "scripture" rather than "mormon"
