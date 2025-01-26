@@ -16,6 +16,9 @@ const GEN_CON_CITE_REG =
 const GEN_CON_REG =
     /\:MC https:\/\/www\.churchofjesuschrist\.org\/study\/general-conference\/\d{1,4}\/\d{1,3}\/[\w-]+(\?lang=[a-zA-Z]+&id=[a-zA-Z0-9-]+#[a-zA-Z0-9-]+)?/;
 
+// TODO Add capture groups to the regex and extract year and month of talk, then pass those to the suggestion.
+// TODO set the talks to output in a different format (in suggestion).
+
 export class GenConSuggester extends Suggester<GenConSuggestion> {
     constructor(public plugin: GospelNotebookPlugin) {
         super(plugin);
@@ -47,14 +50,8 @@ export class GenConSuggester extends Suggester<GenConSuggestion> {
         const match = currentContent.match(this.getQuoteReg("i"))?.[0] ?? "";
 
         if (!match) {
-            console.log(
-                currentContent,
-                " didnt match: ",
-                this.getQuoteReg("i")
-            );
             return null;
         }
-        new Notice("Matched!"); // testing
 
         return {
             start: {
@@ -71,19 +68,19 @@ export class GenConSuggester extends Suggester<GenConSuggestion> {
     ): Promise<GenConSuggestion[]> {
         const { query } = context;
         const fullMatch = query.match(this.getQuoteReg("i"));
-        const { linkFormat: linkType } = this.plugin.settings;
+        const { linkFormat: linkType, quoteStyle } = this.plugin.settings;
 
         if (fullMatch === null) {
             return [];
         }
 
         const url = fullMatch[1];
-        console.log("Talk URL:", url); // # testing
 
         const suggestion = new GenConSuggestion(
             this.plugin.manifest.id,
             url,
-            linkType
+            linkType,
+            quoteStyle
         );
         await suggestion.loadTalk();
 
@@ -91,7 +88,7 @@ export class GenConSuggester extends Suggester<GenConSuggestion> {
     }
 
     renderSuggestion(suggestion: GenConSuggestion, el: HTMLElement): void {
-        suggestion.render(el);
+        suggestion.render(el, suggestion.previewText);
     }
 
     selectSuggestion(

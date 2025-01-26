@@ -20,13 +20,12 @@ import {
     LinkType,
 } from "src/utils/settings";
 
-// TODO clean up settings and divide into three tabs: Scriptures, References, and General Conference
-
 export class GospelNotebookSettingsTab extends PluginSettingTab {
     constructor(app: App, public plugin: GospelNotebookPlugin) {
         super(app, plugin);
     }
 
+    // Language
     setupLanguageOption(containerEl: HTMLElement) {
         new Setting(containerEl)
             .setName("Scripture language")
@@ -45,6 +44,7 @@ export class GospelNotebookSettingsTab extends PluginSettingTab {
             });
     }
 
+    // Verses
     setVerseOptions(containerEl: HTMLElement) {
         // Verse Collapsability
         new Setting(containerEl)
@@ -221,9 +221,9 @@ export class GospelNotebookSettingsTab extends PluginSettingTab {
                 dropdown.addOption(CalloutStyle.Classic, "Classic");
                 dropdown.addOption(CalloutStyle.Stylized, "Stylized");
                 dropdown
-                    .setValue(this.plugin.settings.verseStyle)
+                    .setValue(this.plugin.settings.quoteStyle)
                     .onChange(async (value: CalloutStyle) => {
-                        this.plugin.settings.verseStyle = value;
+                        this.plugin.settings.quoteStyle = value;
                         await this.plugin.saveSettings();
                         new Notice("Conference Quote Style Updated");
                     });

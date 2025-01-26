@@ -23,7 +23,7 @@ export enum CalloutStyle {
 
 export interface GospelNotebookSettings {
     language: AvailableLanguage;
-    linkFormat: LinkFormat; // I want to add program default as an option, but not sure how to yet.
+    linkFormat: LinkFormat;
     linkType: LinkType;
     bidirectionalLinks: boolean;
     verseCollapseType: CalloutCollapseType;
@@ -32,6 +32,7 @@ export interface GospelNotebookSettings {
     toggleInvisibleLinks: boolean;
     verseReferenceToggle: boolean;
     verseStyle: CalloutStyle;
+    quoteStyle: CalloutStyle;
 }
 
 export const DEFAULT_SETTINGS: GospelNotebookSettings = {
@@ -45,4 +46,5 @@ export const DEFAULT_SETTINGS: GospelNotebookSettings = {
     toggleInvisibleLinks: true,
     verseReferenceToggle: true,
     verseStyle: CalloutStyle.Classic,
+    quoteStyle: CalloutStyle.Classic,
 };
