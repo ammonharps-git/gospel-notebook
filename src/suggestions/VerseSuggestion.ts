@@ -9,16 +9,14 @@ import { book_data } from "src/data_access/config";
 import { Suggestion } from "./Suggestion";
 import { VerseDAO } from "src/data_access/VerseDAO";
 
-// TODO clean up this class by removing unneeded variables and examine how data is being stored and handled
-// TODO Consolodate data access to the plugin level using DAO for improved layered architecture that is only dependent on abstractions rather than implementations
-// TODO maybe refactor all data access to the Suggester layer? That would decrease dependencies and more closely follow Single Responsibility Principle
-
+// TODO refactor into static create method. Clean up the class.
 export class VerseSuggestion extends Suggestion {
     public chapter_data: ScriptureData[];
     private bookdata: BookData = book_data;
     private book_title_in_language: string;
     private url: string;
     private dao: VerseDAO;
+    private content = "";
 
     constructor(
         public calloutStyle: CalloutStyle,
@@ -34,7 +32,7 @@ export class VerseSuggestion extends Suggestion {
         this.dao = new VerseDAO();
     }
 
-    public getReplacement(): string {
+    public getFinalSuggestion(): string {
         // let linkFormat = this.linkFormat;
         let range = this.formatNumberList(this.verseNums);
 

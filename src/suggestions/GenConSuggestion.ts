@@ -4,62 +4,99 @@ import { CalloutStyle, LinkFormat } from "src/utils/settings";
 import { Suggestion } from "./Suggestion";
 import { GenConDAO } from "src/data_access/GenConDAO";
 
-// TOOD make static method rather than load
 export class GenConSuggestion extends Suggestion {
-    private text: string;
-    public previewText: string;
-    private data: GenConTalkData;
-    private date: string;
-    private dao: GenConDAO;
+    private title;
+    private authorName;
+    private authorTitle;
+    private date;
+    private formattedParagraphs;
+    private style;
+    private url;
 
     constructor(
-        public pluginName: string,
-        public url: string,
-        public linkType: LinkFormat,
-        public quoteStyle: CalloutStyle
+        title: string,
+        authorName: string,
+        authorTitle: string,
+        date: string,
+        formattedParagraphs: string,
+        preview: string,
+        style: CalloutStyle,
+        url: string
     ) {
         super();
-        this.dao = new GenConDAO();
+        this.title = title;
+        this.authorName = authorName;
+        this.authorTitle = authorTitle;
+        this.date = date;
+        this.formattedParagraphs = formattedParagraphs;
+        this.preview = preview;
+        this.style = style;
+        this.url = url;
     }
 
-    private convertDate = (dateString: string): string => {
-        // Parse the date string
-        const parsedDate = parse(dateString, "MM-yyyy", new Date());
-        // Format the parsed date to the desired format
-        return format(parsedDate, "MMMM yyyy");
-    };
-
-    public getReplacement(): string {
-        this.text = this.toText();
-        if (this.quoteStyle === CalloutStyle.Stylized) {
-            let headerFront = `>[!gencon] [${this.data.title}](${this.url})`;
-            const attribution = `>> [!genconcitation]\n>> ${this.data.author[0]}\n>> ${this.data.author[1]}\n>>${this.date}`;
-            return headerFront + "\n" + this.text + attribution + "\n";
-        } else if (this.quoteStyle === CalloutStyle.Classic) {
-            return `> [!quote] ${this.data.author[0]} (${this.data.author[1]})\n> ${this.text}> [${this.data.author[0]}, ${this.data.title}, ${this.date} General Conference](${this.url})`;
+    public getFinalSuggestion(): string {
+        if (this.style === CalloutStyle.Stylized) {
+            let headerFront = `>[!gencon] [${this.title}](${this.url})`;
+            const attribution = `>> [!genconcitation]\n>> ${this.authorName}\n>> ${this.authorTitle}\n>>${this.date}`;
+            return (
+                headerFront +
+                "\n" +
+                this.formattedParagraphs +
+                attribution +
+                "\n"
+            );
+        } else if (this.style === CalloutStyle.Classic) {
+            return `> [!quote] ${this.authorName} (${this.authorTitle})\n${this.formattedParagraphs}> [${this.authorName}, _${this.title}_, ${this.date} General Conference](${this.url})\n`;
         } else {
-            throw new Error("Invalid Callout style found: " + this.quoteStyle);
+            throw new Error("Invalid quote callout style found: " + this.style);
         }
     }
 
-    private toText(): string {
+    // Static methods
+
+    static formatDate = (dateString: string): string => {
+        const parsedDate = parse(dateString, "MM-yyyy", new Date());
+        return format(parsedDate, "MMMM yyyy");
+    };
+
+    static formatContent(paragraphs: string[]): string {
         let outstring: string = "";
-        this.data.content.forEach((element) => {
-            outstring = outstring + `> ${element} \n>\n `;
-        });
-        return outstring;
+        for (let i = 0; i < paragraphs.length; i++) {
+            outstring = outstring + `> > ${paragraphs[i]}\n`;
+            if (i != paragraphs.length - 1) {
+                outstring += `> > \n`;
+            } else {
+                outstring += `> \n`;
+            }
+        }
+        return outstring ? outstring : "> > %% Quote goes here! %%\n> \n";
     }
 
-    public async loadTalk(): Promise<void> {
-        this.data = await this.dao.fetchGenConTalk(this.url, "GET");
-        this.previewText = `_${this.data.title}_ by ${this.data.author[0]}`;
-        this.date = this.convertDate(`${this.data.month}-${this.data.year}`);
-        this.text = this.toText();
-    }
+    static async create(
+        url: string,
+        style: CalloutStyle
+    ): Promise<GenConSuggestion> {
+        // Fetch talk data
+        const dao = new GenConDAO();
+        const talkData: GenConTalkData = await dao.fetchGenConTalk(url, "GET");
 
-    // public render(el: HTMLElement): void {
-    //     //run by the program, note i've defined it to use preview text...
-    //     const outer = el.createDiv({ cls: "obr-sugggester-container" });
-    //     outer.createDiv({ cls: "obr-shortcode" }).setText(this.previewText);
-    // }
+        // Destructure
+        const { month, year, title, author, content } = talkData;
+        const authorName = author[0];
+        const authorTitle = author[1];
+        const preview = `${title} (by ${authorName})`;
+        const date = this.formatDate(`${month}-${year}`);
+        const formattedParagraphs = this.formatContent(content);
+
+        return new GenConSuggestion(
+            title,
+            authorName,
+            authorTitle,
+            date,
+            formattedParagraphs,
+            preview,
+            style,
+            url
+        );
+    }
 }
