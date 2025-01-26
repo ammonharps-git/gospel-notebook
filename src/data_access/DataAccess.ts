@@ -11,8 +11,6 @@ interface ParsedURL {
     paragraphs?: {
         start: number;
         end: number;
-
-        
     };
 }
 
@@ -33,15 +31,15 @@ export abstract class DataAccess {
             let match = id.match(/p(\d+)-p(\d+)/);
             if (match) {
                 paragraphs = {
-                    start: parseInt(match[1], 10),
-                    end: parseInt(match[2], 10),
+                    start: parseInt(match[1]),
+                    end: parseInt(match[2]),
                 };
             } else {
                 match = id.match(/p(\d+)/);
                 if (match) {
                     paragraphs = {
-                        start: parseInt(match[1], 10),
-                        end: parseInt(match[1], 10),
+                        start: parseInt(match[1]),
+                        end: parseInt(match[1]),
                     };
                 }
             }

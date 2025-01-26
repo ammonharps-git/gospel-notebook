@@ -9,7 +9,7 @@ import { book_data } from "src/data_access/config";
 import { Suggestion } from "./Suggestion";
 import { VerseDAO } from "src/data_access/VerseDAO";
 
-// TODO refactor into static create method. Clean up the class.
+// TODO refactor into static create method. Clean up the class, remove public variables.
 export class VerseSuggestion extends Suggestion {
     public chapter_data: ScriptureData[];
     private bookdata: BookData = book_data;
