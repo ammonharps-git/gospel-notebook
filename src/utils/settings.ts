@@ -25,11 +25,12 @@ export interface GospelNotebookSettings {
     language: AvailableLanguage;
     linkFormat: LinkFormat; // I want to add program default as an option, but not sure how to yet.
     linkType: LinkType;
-    createChapterLink: boolean;
     bidirectionalLinks: boolean;
     verseCollapseType: CalloutCollapseType;
     verseTrigger: string;
+    quoteTrigger: string;
     toggleInvisibleLinks: boolean;
+    verseReferenceToggle: boolean;
     verseStyle: CalloutStyle;
 }
 
@@ -37,10 +38,11 @@ export const DEFAULT_SETTINGS: GospelNotebookSettings = {
     language: "eng",
     linkFormat: LinkFormat.Markdown,
     linkType: LinkType.ChurchWebsite,
-    createChapterLink: false,
     bidirectionalLinks: false,
     verseCollapseType: CalloutCollapseType.Expanded,
     verseTrigger: "+",
+    quoteTrigger: "+",
     toggleInvisibleLinks: true,
+    verseReferenceToggle: true,
     verseStyle: CalloutStyle.Classic,
 };

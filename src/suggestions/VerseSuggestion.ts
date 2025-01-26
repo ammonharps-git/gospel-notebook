@@ -28,7 +28,6 @@ export class VerseSuggestion extends Suggestion {
         public lang: AvailableLanguage,
         public linkType: LinkType,
         public linkFormat: LinkFormat,
-        public createChapterLink: boolean,
         public createInvisibleLink: boolean
     ) {
         super();

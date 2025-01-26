@@ -15,7 +15,7 @@ import {
 } from "../utils/lang";
 import {
     CalloutCollapseType as VerseCollapseType,
-    CalloutStyle as VerseStyle,
+    CalloutStyle,
     LinkFormat,
     LinkType,
 } from "src/utils/settings";
@@ -74,11 +74,11 @@ export class GospelNotebookSettingsTab extends PluginSettingTab {
                 "Choose between classic Obisidian or custom callout styles for inserted verses."
             )
             .addDropdown((dropdown) => {
-                dropdown.addOption(VerseStyle.Classic, "Classic");
-                dropdown.addOption(VerseStyle.Stylized, "Stylized");
+                dropdown.addOption(CalloutStyle.Classic, "Classic");
+                dropdown.addOption(CalloutStyle.Stylized, "Stylized");
                 dropdown
                     .setValue(this.plugin.settings.verseStyle)
-                    .onChange(async (value: VerseStyle) => {
+                    .onChange(async (value: CalloutStyle) => {
                         this.plugin.settings.verseStyle = value;
                         await this.plugin.saveSettings();
                         new Notice("Verse Style Updated");
@@ -167,34 +167,118 @@ export class GospelNotebookSettingsTab extends PluginSettingTab {
             });
     }
 
-    setupLinkOption(containerEl: HTMLElement) {
-        // Adding additional settings which can automatically create back links so you can see which of your documents
-        // and how many reference which chapters in the scriptures.
+    // References
+    setReferenceOptions(containerEl: HTMLElement) {
+        let verseReferenceToggle: ToggleComponent;
         new Setting(containerEl)
-            .setName("Chapter linking")
+            .setName("Suggest Verse Links")
             .setDesc(
-                "When adding a scripture reference, create a link to an document named <Book> <Chapter>."
+                'Whenever a scripture reference is found (such as "1 Nephi 3:7"), a suggestion will appear and ask if you would like to replace the reference with a link. Press enter to insert the link. Simply ignore the suggestion and continue typing if you do not want to insert a link. This setting is especially helpful when quoting partial verses. For example: "Nephi says that he will \'go and do\' what the Lord commands (1 Nephi 3:7)."'
             )
-            .addToggle((toggle) =>
-                toggle
-                    .setValue(this.plugin.settings.createChapterLink)
-                    .onChange(async (value) => {
-                        this.plugin.settings.createChapterLink = value;
+            .addToggle((toggle) => {
+                verseReferenceToggle = toggle;
+                verseReferenceToggle
+                    .setValue(this.plugin.settings.verseReferenceToggle)
+                    .onChange(async (value: boolean) => {
+                        this.plugin.settings.verseReferenceToggle = value;
                         await this.plugin.saveSettings();
-                    })
-            );
+                        new Notice("Updated Verse Reference Settings");
+                    });
+            });
+    }
+
+    // General Conference
+    setConferenceOptions(containerEl: HTMLElement) {
+        // Verse Collapsability
+        new Setting(containerEl)
+            .setName("Quote Collapsability")
+            .setDesc(
+                "When inserting a cconference quote, this determines if the verse callout block will be expanded, collapsed, or non-collapsable by default."
+            )
+            .addDropdown((dropdown) => {
+                dropdown.addOption(VerseCollapseType.Collapsed, "Collapsed");
+                dropdown.addOption(VerseCollapseType.Expanded, "Expanded");
+                dropdown.addOption(
+                    VerseCollapseType.NonCollapsable,
+                    "Non-Collapsable"
+                );
+                dropdown
+                    .setValue(this.plugin.settings.verseCollapseType)
+                    .onChange(async (value: VerseCollapseType) => {
+                        this.plugin.settings.verseCollapseType = value;
+                        await this.plugin.saveSettings();
+                        new Notice("Conference Quote Collapsability Updated");
+                    });
+            });
+
+        // Quote Style
+        new Setting(containerEl)
+            .setName("Conference Quote Style")
+            .setDesc(
+                "Choose between classic Obisidian callouts or custom styles for inserted quotes."
+            )
+            .addDropdown((dropdown) => {
+                dropdown.addOption(CalloutStyle.Classic, "Classic");
+                dropdown.addOption(CalloutStyle.Stylized, "Stylized");
+                dropdown
+                    .setValue(this.plugin.settings.verseStyle)
+                    .onChange(async (value: CalloutStyle) => {
+                        this.plugin.settings.verseStyle = value;
+                        await this.plugin.saveSettings();
+                        new Notice("Conference Quote Style Updated");
+                    });
+            });
+
+        // Quote Trigger
+        let initialValue = this.plugin.settings.verseTrigger;
+        let textAreaValue: string = initialValue;
+        let button: ButtonComponent;
+        new Setting(containerEl)
+            .setName("Conference Quote Trigger")
+            .setDesc(
+                'The verse callout trigger is the character or string that preceeds a general conference link in order for a quote callout to be suggested to you. For example, if the callout trigger were "+" (the addition symbol), then a quote callout would be suggested if you typed "+https://churchofjesuschrist...etc" or "+" followed by any other conference talk link. Be careful to not include any unintentional leading or trailing spaces, as they will be counted as part of the trigger.'
+            )
+            .addTextArea((textArea) => {
+                textArea.setValue(textAreaValue).onChange((value: string) => {
+                    textAreaValue = value;
+                    button.setDisabled(value === initialValue);
+                });
+            })
+            .addButton((btn) => {
+                button = btn;
+                button
+                    .setDisabled(true)
+                    .setButtonText("Save")
+                    .onClick(async () => {
+                        this.plugin.settings.quoteTrigger = textAreaValue;
+                        await this.plugin.saveSettings();
+                        new Notice("Conference Quote Trigger Updated");
+                        initialValue = textAreaValue;
+                        button.setDisabled(true);
+                    });
+            });
     }
 
     display() {
         const { containerEl } = this;
         containerEl.empty();
 
+        // General Settings
         containerEl.createEl("h1", { text: "Gospel Notebook Settings" });
         this.setupLanguageOption(containerEl);
+
+        // Verse Suggestion
         containerEl.createEl("h2", { text: "Verse Suggestion Settings" });
         this.setVerseOptions(containerEl);
-        this.setupLinkOption(containerEl);
 
+        // Reference Suggestion
+        containerEl.createEl("h2", { text: "Reference Suggestion Settings" });
+
+        // General Conference
+        containerEl.createEl("h2", { text: "General Conference Settings" });
+        this.setConferenceOptions(containerEl);
+
+        // About
         containerEl.createEl("h2", { text: "About" });
         containerEl.createSpan({}, (span) => {
             span.innerHTML = `<a href="https://github.com/ammonharps-git/gospel-notebook">Click Here</a> to view the Github documentation for this plugin.`;

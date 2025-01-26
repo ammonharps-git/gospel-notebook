@@ -35,8 +35,8 @@
     );
 }
 
-/* Stylized Mormon Callout */
-.callout[data-callout="Stylized"] {
+/* Stylized Callout */
+.callout[data-callout="stylized"] {
     --callout-icon: var(--callout-icon-quote);
     --link-external-color: var(--callout-color-primary);
     border-color: var(--callout-color-border) !important;
@@ -61,16 +61,16 @@
         color: #000000;
         display: none;
     }
+
+    & > .callout-content p {
+        font-style: italic;
+        /* text-align: center; */
+    }
 }
 
 /* Classic Style Scripture Callout */
-.callout[data-callout="Mormon"] {
+.callout[data-callout="mormon"] {
     --callout-icon: book-plus;
-}
-
-.callout[data-callout="Stylized"] .callout-content p {
-    font-style: italic;
-    /* text-align: center; */
 }
 
 /* GenCon Callout */
@@ -99,11 +99,11 @@
         color: #000000;
         display: none;
     }
-}
 
-.callout[data-callout="gencon"] .callout-content p {
-    font-style: italic;
-    /* text-align: center; */
+    & > .callout-content p {
+        font-style: italic;
+        /* text-align: center; */
+    }
 }
 
 /* GenCon Citation */

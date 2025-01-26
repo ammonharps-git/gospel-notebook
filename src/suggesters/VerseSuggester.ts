@@ -71,7 +71,6 @@ export class VerseSuggester extends Suggester<VerseSuggestion> {
             language,
             linkType,
             linkFormat,
-            createChapterLink,
             toggleInvisibleLinks,
             verseStyle,
         } = this.plugin.settings;
@@ -93,7 +92,6 @@ export class VerseSuggester extends Suggester<VerseSuggestion> {
             language,
             linkType,
             linkFormat,
-            createChapterLink,
             toggleInvisibleLinks
         );
         await suggestion.loadVerse();
