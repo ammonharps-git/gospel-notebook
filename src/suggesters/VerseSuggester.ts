@@ -11,16 +11,16 @@ import { VerseSuggestion } from "../suggestions/VerseSuggestion";
 import { Suggester } from "./Suggester";
 
 // TODO need to rewrite RegEx to remove the need for ';' at the end
+// Could also implement this as a "endTrigger" in settings exactly like the initial trigger so people can have optional setting to use a dynamic closing trigger.
 // use one large capture group to capture everything after the chapter colon ':' but RegEx match it using repeating non-capturing groups
 // Use the large capture group to parse the verses, but the full regex to make sure pattern matches without the need for ';'
-// Could also implement this as a "endTrigger" in settings exactly like the initial trigger so people can have optional setting to use a dynamic closing trigger.
 
 export class VerseSuggester extends Suggester<VerseSuggestion> {
     constructor(public plugin: GospelNotebookPlugin) {
         super(plugin);
     }
 
-    // fetch trigger from settings but delimit it with backslashes to prevent unwantd RegEx behavior
+    // Get trigger from settings but delimit it with backslashes to prevent unwantd RegEx behavior
     private getVerseTrigger(): string {
         const trigger: string = this.plugin.settings.verseTrigger
             ? "\\" + this.plugin.settings.verseTrigger.split("").join("\\")
@@ -28,13 +28,15 @@ export class VerseSuggester extends Suggester<VerseSuggestion> {
         return trigger;
     }
 
-    private getVerseReg(flags: string): RegExp {
+    // Build the RegEx
+    private getVerseReg(flags?: string): RegExp {
         return new RegExp(
             `${this.getVerseTrigger()}([1234]*[A-Za-z ]{3,}) (\\d{1,3}):(.*);`,
             flags
         );
     }
 
+    // Determines if suggestion is needed
     onTrigger(
         cursor: EditorPosition,
         editor: Editor,
@@ -64,6 +66,7 @@ export class VerseSuggester extends Suggester<VerseSuggestion> {
         };
     }
 
+    // Return suggestion to user
     async getSuggestions(
         context: EditorSuggestContext
     ): Promise<VerseSuggestion[]> {
@@ -73,6 +76,7 @@ export class VerseSuggester extends Suggester<VerseSuggestion> {
             linkFormat,
             toggleInvisibleLinks,
             verseStyle,
+            verseCollapseType,
         } = this.plugin.settings;
         const { query } = context;
 
@@ -92,7 +96,8 @@ export class VerseSuggester extends Suggester<VerseSuggestion> {
             language,
             linkType,
             linkFormat,
-            toggleInvisibleLinks
+            toggleInvisibleLinks,
+            verseCollapseType
         );
         await suggestion.loadVerse();
         return [suggestion];

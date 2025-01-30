@@ -1,4 +1,5 @@
 import {
+    CalloutCollapseType,
     CalloutStyle,
     LinkFormat as LinkFormat,
     LinkType,
@@ -26,7 +27,8 @@ export class VerseSuggestion extends Suggestion {
         public lang: AvailableLanguage,
         public linkType: LinkType,
         public linkFormat: LinkFormat,
-        public createInvisibleLink: boolean
+        public createInvisibleLink: boolean,
+        public verseCollapseType: CalloutCollapseType
     ) {
         super();
         this.dao = new VerseDAO();
@@ -67,7 +69,7 @@ export class VerseSuggestion extends Suggestion {
         } else {
             throw new Error("Invalid LinkType: " + this.linkType);
         }
-        return `> [!${this.calloutStyle}] ${header}\n${this.content}\n`;
+        return `> [!${this.calloutStyle}]${this.verseCollapseType} ${header}\n${this.content}\n`;
 
         // Normal function
         // const headerFront = `${this.book_title_in_language}:`;

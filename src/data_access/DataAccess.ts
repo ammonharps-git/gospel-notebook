@@ -22,26 +22,20 @@ interface ParsedURL {
 
 export abstract class DataAccess {
     protected parseURL(url: string): ParsedURL {
-        console.log("url:", url); // testing
         const parsedUrl = new URL(url);
-        console.log("parsedUrl:", parsedUrl); // testing
         const delimiters = /[/]/;
-        console.log("pathname:", parsedUrl.pathname); // testing
         const pathParts = parsedUrl.pathname
             .split(delimiters)
             .filter((part) => part);
-        console.log("search:", parsedUrl.search); // testing
         const searchParams = new URLSearchParams(parsedUrl.search);
         const queryParams: { [key: string]: string | undefined } = {};
         searchParams.forEach((value, key) => {
-            console.log("section:", key, value); // testing
             queryParams[key] = value;
         });
 
         let paragraphs;
         let paragraphIDs;
         const id = queryParams.id;
-        console.log(id); // testing
         if (typeof id === "string") {
             const regNumRange = /p(\d+)-p(\d+)/;
             const regNum = /p(\d+)/;

@@ -9,8 +9,6 @@ import {
 } from "./config";
 import { DataAccess } from "./DataAccess";
 
-// TODO fix paragraph number system change starting in 2024 conference talks (no more paragraph numberings, now unique id)
-
 export class GenConDAO extends DataAccess {
     public async fetchGenConTalk(
         url: string,
@@ -94,7 +92,6 @@ export class GenConDAO extends DataAccess {
 
                     // Select all elements whose id starts with 'p'
                     const elements = $('[id^="p"]');
-                    console.log(elements); // testing
 
                     // Iterate over matched elements
                     let include = false;
@@ -104,7 +101,6 @@ export class GenConDAO extends DataAccess {
                     for (let i = 0; i <= elements.length; i++) {
                         const paragraph = $(elements[i]);
                         const paragraphID = paragraph.attr("id");
-                        console.log("Checking paragraph with ID:", paragraphID); // testing
                         if (paragraphID === startID) {
                             console.log("Found starting paragraph!"); // testing
                             include = true;
@@ -119,7 +115,6 @@ export class GenConDAO extends DataAccess {
                             content.push(paragraph.text()?.trim());
                         }
                         if (foundEnd) {
-                            console.log("Ending the loop early!"); // testing
                             break;
                         }
                     }
