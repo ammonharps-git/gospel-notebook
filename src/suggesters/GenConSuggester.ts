@@ -11,6 +11,8 @@ import GospelNotebookPlugin from "src/GospelNotebookPlugin";
 import { GenConSuggestion } from "../suggestions/GenConSuggestion";
 import { Suggester } from "./Suggester";
 
+// TODO fix the regex to account for id being in a different position.
+
 export class GenConSuggester extends Suggester<GenConSuggestion> {
     constructor(public plugin: GospelNotebookPlugin) {
         super(plugin);
@@ -27,7 +29,8 @@ export class GenConSuggester extends Suggester<GenConSuggestion> {
     // Returns RegEx expression with optional flags
     private getQuoteReg(flags?: string): RegExp {
         return new RegExp(
-            `${this.getQuoteTrigger()}(https:\\/\\/www\\.churchofjesuschrist\\.org\\/study\\/general-conference\\/\\d{1,4}\\/\\d{1,3}\\/[\\w-]+(\\?lang=[a-zA-Z]+&id=[a-zA-Z0-9-]+#[a-zA-Z0-9-]+)?)`,
+            `${this.getQuoteTrigger()}(https:\\/\\/www\\.churchofjesuschrist\\.org\\/study\\/general-conference\\/\\d{1,4}\\/\\d{1,3}\\/[\\w-]+\\S*)`,
+            // `${this.getQuoteTrigger()}(https:\\/\\/www\\.churchofjesuschrist\\.org\\/study\\/general-conference\\/\\d{1,4}\\/\\d{1,3}\\/[\\w-]+(\\?lang=[a-zA-Z]+&id=[a-zA-Z0-9-]+#[a-zA-Z0-9-]+)?)`,
             flags
         );
     }
@@ -72,6 +75,7 @@ export class GenConSuggester extends Suggester<GenConSuggestion> {
 
         // Extract url
         const url = fullMatch[1];
+        console.log("url:", url); // testing
 
         // Create and return suggestion
         const suggestion = await GenConSuggestion.create(url, quoteStyle);

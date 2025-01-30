@@ -9,6 +9,8 @@ import {
 } from "./config";
 import { DataAccess } from "./DataAccess";
 
+// TODO fix paragraph number system change starting in 2024 conference talks (no more paragraph numberings, now unique id)
+
 export class GenConDAO extends DataAccess {
     public async fetchGenConTalk(
         url: string,
@@ -68,18 +70,78 @@ export class GenConDAO extends DataAccess {
             author.push(authorname);
             author.push(authorrole);
 
-            if (parsedData.paragraphs) {
-                const { start, end } = parsedData.paragraphs;
-                const paragraphEnd = end !== undefined ? end : start;
+            if (!!parsedData.paragraphNums) {
+                const { startNum: start, endNum: end } =
+                    parsedData.paragraphNums;
+                if (!!start) {
+                    // Paragraphs are listed by consecutive numbers
+                    const paragraphEnd = !!end ? end : start;
 
-                for (let i = start; i <= paragraphEnd; i++) {
-                    const paragraph = $(`#p${i}`).text()?.trim();
-                    if (paragraph) {
-                        content.push(paragraph);
-                    } else {
-                        console.warn(`Paragraph #${i} not found.`);
+                    for (let i = start; i <= paragraphEnd; i++) {
+                        const paragraph = $(`#p${i}`).text()?.trim();
+                        if (paragraph) {
+                            content.push(paragraph);
+                        } else {
+                            console.warn(`Paragraph #${i} not found.`);
+                        }
                     }
                 }
+            } else if (!!parsedData.paragraphIDs) {
+                const { startID, endID } = parsedData.paragraphIDs;
+                console.log("Started parsing with id range:", startID, endID); // testing
+                if (!!startID) {
+                    // Paragraphs are listed by unique IDs
+
+                    // Select all elements whose id starts with 'p'
+                    const elements = $('[id^="p"]');
+                    console.log(elements); // testing
+
+                    // Iterate over matched elements
+                    let include = false;
+                    let foundStart = false;
+                    let foundEnd = false;
+                    const paragraphEndID = !!endID ? endID : startID;
+                    for (let i = 0; i <= elements.length; i++) {
+                        const paragraph = $(elements[i]);
+                        const paragraphID = paragraph.attr("id");
+                        console.log("Checking paragraph with ID:", paragraphID); // testing
+                        if (paragraphID === startID) {
+                            console.log("Found starting paragraph!"); // testing
+                            include = true;
+                            foundStart = true;
+                        }
+                        if (paragraphID === paragraphEndID) {
+                            console.log("Found ending paragraph!"); // testing
+                            foundEnd = true;
+                        }
+                        if (include) {
+                            console.log("Adding a paragraph to the result!"); // testing
+                            content.push(paragraph.text()?.trim());
+                        }
+                        if (foundEnd) {
+                            console.log("Ending the loop early!"); // testing
+                            break;
+                        }
+                    }
+                    if (!foundStart) {
+                        console.warn(
+                            `Starting paragraph with id="${startID}" not found.`
+                        );
+                    }
+                    if (!foundEnd) {
+                        console.warn(
+                            `Ending paragraph with id="${endID}" not found.`
+                        );
+                    }
+                } else {
+                    throw new Error(
+                        "Failed to find the starting paragraph by ID."
+                    );
+                }
+            } else {
+                console.warn(
+                    "Failed to extract the paragraph data from the webpage."
+                );
             }
 
             year = parsedData.pathParts[2];

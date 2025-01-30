@@ -11,6 +11,7 @@ export const NAME_QUERIES = [
     { name: "h1", id: "p1" },
     { name: "h1", id: "p4" },
     { name: "h1", id: "title56" },
+    { name: "h1" },
 ];
 
 export const AUTHOR_QUERIES = [
