@@ -31,7 +31,7 @@ export class VerseSuggester extends Suggester<VerseSuggestion> {
     // Build the RegEx
     private getVerseReg(flags?: string): RegExp {
         return new RegExp(
-            `${this.getVerseTrigger()}([1234]*[A-Za-z ]{3,}) (\\d{1,3}):(.*);`,
+            `${this.getVerseTrigger()}([1234]*[A-Za-z &\\.]{3,}) (\\d{1,3}):(.*);`,
             flags
         );
     }

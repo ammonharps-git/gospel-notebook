@@ -7,7 +7,7 @@
         "dev": "node esbuild.config.mjs",
         "build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
         "version": "node version-bump.mjs && git add manifest.json versions.json",
-        "export": "scp ./main.js C:\\Users\\ammon\\OneDrive\\OneSyncFiles\\.obsidian\\plugins\\lds-library-reference && scp ./styles.css C:\\Users\\ammon\\OneDrive\\OneSyncFiles\\.obsidian\\plugins\\lds-library-reference"
+        "export": "npm run build && scp ./main.js C:\\Users\\ammon\\OneDrive\\OneSyncFiles\\.obsidian\\plugins\\lds-library-reference && scp ./styles.css C:\\Users\\ammon\\OneDrive\\OneSyncFiles\\.obsidian\\plugins\\lds-library-reference"
     },
     "keywords": [
         "lds",

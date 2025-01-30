@@ -36,20 +36,6 @@ export abstract class Suggester<T extends Suggestion> extends EditorSuggest<T> {
         return true;
     }
 
-    // Returns full book name if input is abbreviation, otherwise returns input unchanged
-    protected getBookName(abbreviation: string) {
-        let bookName: string = abbreviation;
-        if (!!BOOK_ABBREVIATION_MAPPING[this.plugin.settings.language]) {
-            const possibleName = BOOK_ABBREVIATION_MAPPING[
-                this.plugin.settings.language
-            ]?.get(abbreviation.toLowerCase());
-            if (!!possibleName) {
-                bookName = possibleName;
-            }
-        }
-        return bookName;
-    }
-
     // renders the suggestion
     renderSuggestion(suggestion: T, el: HTMLElement): void {
         suggestion.render(el, suggestion.preview);

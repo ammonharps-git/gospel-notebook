@@ -37,13 +37,12 @@ export class GenConSuggestion extends Suggestion {
     public getFinalSuggestion(): string {
         if (!(this.style in CalloutStyle)) {
             console.warn(
-                "Invalid quote callout style found. Defaulting to Classic style. Invalid style:",
+                "Invalid quote callout style found. Invalid style:",
                 this.style
             );
-            this.style = CalloutStyle.Classic;
         }
         if (this.style === CalloutStyle.Stylized) {
-            let headerFront = `>[!gencon] [${this.title}](${this.url})`;
+            let headerFront = `>[!stylized] [${this.title}](${this.url})`;
             const attribution = `>> [!genconcitation]\n>> ${this.authorName}\n>> ${this.authorTitle}\n>>${this.date}`;
             return (
                 headerFront +
@@ -53,7 +52,7 @@ export class GenConSuggestion extends Suggestion {
                 "\n"
             );
         } else if (this.style === CalloutStyle.Classic) {
-            return `> [!quote] ${this.authorName} (${this.authorTitle})\n${this.formattedParagraphs}> [${this.authorName}, _${this.title}_, ${this.date} General Conference](${this.url})\n`;
+            return `> [!gencon] ${this.authorName} (${this.authorTitle})\n${this.formattedParagraphs}> [${this.authorName}, _${this.title}_, ${this.date} General Conference](${this.url})\n`;
         } else {
             throw new Error(
                 "Invalid quote callout style error. Style: " + this.style

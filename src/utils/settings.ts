@@ -17,8 +17,8 @@ export enum LinkType {
 }
 
 export enum CalloutStyle {
-    Classic = "Mormon",
-    Stylized = "Stylized",
+    Classic = "scripture",
+    Stylized = "stylized",
 }
 
 export interface GospelNotebookSettings {

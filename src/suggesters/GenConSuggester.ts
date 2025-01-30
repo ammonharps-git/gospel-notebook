@@ -75,7 +75,6 @@ export class GenConSuggester extends Suggester<GenConSuggestion> {
 
         // Extract url
         const url = fullMatch[1];
-        console.log("url:", url); // testing
 
         // Create and return suggestion
         const suggestion = await GenConSuggestion.create(url, quoteStyle);

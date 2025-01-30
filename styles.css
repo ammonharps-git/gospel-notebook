@@ -73,37 +73,15 @@
     --callout-icon: book-plus;
 }
 
+/* Classic Style Scripture Callout */
+.callout[data-callout="scripture"] {
+    --callout-icon: book-marked;
+}
+
 /* GenCon Callout */
 .callout[data-callout="gencon"] {
-    --callout-icon: var(--callout-icon-quote);
-    --link-external-color: var(--callout-color-primary);
-    border-color: var(--callout-color-border) !important;
-    border-radius: var(--callout-border-radius);
-    border-left-color: var(--callout-color-primary) !important;
-    border-left-width: var(--callout-border-left-width) !important;
-    background-color: var(--callout-color-bg);
-    background-image: var(--callout-background-gradient);
-    font-size: var(--callout-font-size);
-    line-height: var(--callout-line-height);
-    margin: auto;
-    margin-bottom: 10px;
-    padding: var(--callout-padding);
-
-    & > .callout-title > .callout-title-inner {
-        color: var(--callout-color-primary);
-        font-size: var(--callout-title-font-size);
-        line-height: var(--callout-title-line-height);
-    }
-
-    & > .callout-title > .callout-icon {
-        color: #000000;
-        display: none;
-    }
-
-    & > .callout-content p {
-        font-style: italic;
-        /* text-align: center; */
-    }
+    --callout-icon: lectern;
+    --callout-color: 152, 152, 152;
 }
 
 /* GenCon Citation */
