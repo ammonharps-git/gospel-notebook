@@ -27,6 +27,7 @@ export interface GospelNotebookSettings {
     linkType: LinkType;
     bidirectionalLinks: boolean;
     verseCollapseType: CalloutCollapseType;
+    quoteCollapseType: CalloutCollapseType;
     verseTrigger: string;
     quoteTrigger: string;
     toggleInvisibleLinks: boolean;
@@ -41,6 +42,7 @@ export const DEFAULT_SETTINGS: GospelNotebookSettings = {
     linkType: LinkType.ChurchWebsite,
     bidirectionalLinks: false,
     verseCollapseType: CalloutCollapseType.Expanded,
+    quoteCollapseType: CalloutCollapseType.Expanded,
     verseTrigger: "+",
     quoteTrigger: "+",
     toggleInvisibleLinks: true,

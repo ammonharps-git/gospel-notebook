@@ -14,7 +14,7 @@ import {
     AvailableLanguage,
 } from "../utils/lang";
 import {
-    CalloutCollapseType as VerseCollapseType,
+    CalloutCollapseType,
     CalloutStyle,
     LinkFormat,
     LinkType,
@@ -53,15 +53,15 @@ export class GospelNotebookSettingsTab extends PluginSettingTab {
                 "When inserting a scripture, this determines if the verse callout block will be expanded, collapsed, or non-collapsable by default."
             )
             .addDropdown((dropdown) => {
-                dropdown.addOption(VerseCollapseType.Collapsed, "Collapsed");
-                dropdown.addOption(VerseCollapseType.Expanded, "Expanded");
+                dropdown.addOption(CalloutCollapseType.Collapsed, "Collapsed");
+                dropdown.addOption(CalloutCollapseType.Expanded, "Expanded");
                 dropdown.addOption(
-                    VerseCollapseType.NonCollapsable,
+                    CalloutCollapseType.NonCollapsable,
                     "Non-Collapsable"
                 );
                 dropdown
                     .setValue(this.plugin.settings.verseCollapseType)
-                    .onChange(async (value: VerseCollapseType) => {
+                    .onChange(async (value: CalloutCollapseType) => {
                         this.plugin.settings.verseCollapseType = value;
                         await this.plugin.saveSettings();
                         new Notice("Verse Collapsability Updated");
@@ -196,16 +196,16 @@ export class GospelNotebookSettingsTab extends PluginSettingTab {
                 "When inserting a conference quote, this determines if the verse callout block will be expanded, collapsed, or non-collapsable by default."
             )
             .addDropdown((dropdown) => {
-                dropdown.addOption(VerseCollapseType.Collapsed, "Collapsed");
-                dropdown.addOption(VerseCollapseType.Expanded, "Expanded");
+                dropdown.addOption(CalloutCollapseType.Collapsed, "Collapsed");
+                dropdown.addOption(CalloutCollapseType.Expanded, "Expanded");
                 dropdown.addOption(
-                    VerseCollapseType.NonCollapsable,
+                    CalloutCollapseType.NonCollapsable,
                     "Non-Collapsable"
                 );
                 dropdown
-                    .setValue(this.plugin.settings.verseCollapseType)
-                    .onChange(async (value: VerseCollapseType) => {
-                        this.plugin.settings.verseCollapseType = value;
+                    .setValue(this.plugin.settings.quoteCollapseType)
+                    .onChange(async (value: CalloutCollapseType) => {
+                        this.plugin.settings.quoteCollapseType = value;
                         await this.plugin.saveSettings();
                         new Notice("Conference Quote Collapsability Updated");
                     });

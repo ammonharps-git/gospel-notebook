@@ -1,6 +1,10 @@
 import { GenConTalkData } from "src/utils/types";
 import { format, parse } from "date-fns";
-import { CalloutStyle, LinkFormat } from "src/utils/settings";
+import {
+    CalloutCollapseType,
+    CalloutStyle,
+    LinkFormat,
+} from "src/utils/settings";
 import { Suggestion } from "./Suggestion";
 import { GenConDAO } from "src/data_access/GenConDAO";
 
@@ -35,7 +39,8 @@ export class GenConSuggestion extends Suggestion {
 
     static async create(
         url: string,
-        style: CalloutStyle
+        style: CalloutStyle,
+        collpseType: CalloutCollapseType
     ): Promise<GenConSuggestion> {
         // Fetch talk data
         const dao = new GenConDAO();
@@ -62,11 +67,11 @@ export class GenConSuggestion extends Suggestion {
         }
         if (style === CalloutStyle.Stylized) {
             let headerFront = `>[!stylized] [${title}](${url})`;
-            const attribution = `>> [!genconcitation]\n>> ${authorName}\n>> ${authorTitle}\n>>${date}`;
+            const attribution = `>> [!genconcitation]${collpseType}\n>> ${authorName}\n>> ${authorTitle}\n>>${date}`;
             content =
                 headerFront + "\n" + formattedParagraphs + attribution + "\n";
         } else if (style === CalloutStyle.Classic) {
-            content = `> [!gencon] ${authorName} (${authorTitle})\n${formattedParagraphs}> [${authorName}, _${title}_, ${date} General Conference](${url})\n`;
+            content = `> [!gencon]${collpseType} ${authorName} (${authorTitle})\n${formattedParagraphs}> [${authorName}, _${title}_, ${date} General Conference](${url})\n`;
         } else {
             throw new Error(
                 "Invalid quote callout style error. Style: " + style

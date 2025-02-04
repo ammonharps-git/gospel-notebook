@@ -62,7 +62,7 @@ export class GenConSuggester extends Suggester<GenConSuggestion> {
         context: EditorSuggestContext
     ): Promise<GenConSuggestion[]> {
         const { query } = context;
-        const { quoteStyle } = this.plugin.settings;
+        const { quoteStyle, quoteCollapseType } = this.plugin.settings;
         const fullMatch = query.match(this.getQuoteReg("i"));
 
         // Bail out if no match
@@ -74,7 +74,11 @@ export class GenConSuggester extends Suggester<GenConSuggestion> {
         const url = fullMatch[1];
 
         // Create and return suggestion
-        const suggestion = await GenConSuggestion.create(url, quoteStyle);
+        const suggestion = await GenConSuggestion.create(
+            url,
+            quoteStyle,
+            quoteCollapseType
+        );
         return [suggestion];
     }
 }
