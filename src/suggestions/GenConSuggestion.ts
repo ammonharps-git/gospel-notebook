@@ -67,12 +67,16 @@ export class GenConSuggestion extends Suggestion {
         return format(parsedDate, "MMMM yyyy");
     };
 
-    static formatContent(paragraphs: string[]): string {
+    static formatIndented(
+        paragraphs: string[],
+        numIndents: number = 1
+    ): string {
+        const indent = "> ".repeat(numIndents);
         let outstring: string = "";
         for (let i = 0; i < paragraphs.length; i++) {
-            outstring = outstring + `> > ${paragraphs[i]}\n`;
+            outstring = outstring + `${indent}${paragraphs[i]}\n`;
             if (i != paragraphs.length - 1) {
-                outstring += `> > \n`;
+                outstring += `${indent}\n`;
             } else {
                 outstring += `> \n`;
             }
@@ -94,7 +98,10 @@ export class GenConSuggestion extends Suggestion {
         const authorTitle = author[1];
         const preview = `${title} (by ${authorName})`;
         const date = this.formatDate(`${month}-${year}`);
-        const formattedParagraphs = this.formatContent(content);
+        const formattedParagraphs =
+            style == CalloutStyle.Stylized
+                ? this.formatIndented(content)
+                : this.formatIndented(content, 2);
 
         return new GenConSuggestion(
             title,

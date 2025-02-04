@@ -38,23 +38,6 @@ export class VerseSuggestion extends Suggestion {
         // let linkFormat = this.linkFormat;
         let range = this.formatNumberList(this.verseNums);
 
-        // if (this.createChapterLink) {
-        //     if (linkFormat == LinkFormat.Wiki) {
-        //         // Wiki style link to chapter document and outside URL
-        //         const headerFront = `[[${this.book_title_in_language}|${this.book_title_in_language}:${range}]]`;
-        //         const head = `> [!${this.calloutStyle}] ${headerFront} \n [churchofjesuschrist.org](${this.url})`;
-        //         return head + "\n" + this.text + "\n";
-        //     } else if (linkFormat == LinkFormat.Markdown) {
-        //         // Markdown style link with spaces encoded as %20
-        //         const encodedBookChapter = encodeURIComponent(
-        //             this.book_title_in_language
-        //         );
-        //         const headerFront = `[${this.book_title_in_language}:${range}](${encodedBookChapter})`;
-        //         const head = `> [!${this.calloutStyle}] ${headerFront} \n [churchofjesuschrist.org](${this.url})`;
-        //         return head + "\n" + this.text + "\n";
-        //     }
-        // }
-
         let header: string;
         if (this.linkType == LinkType.ChurchWebsite) {
             const invisibleLink = this.createInvisibleLink
@@ -70,11 +53,6 @@ export class VerseSuggestion extends Suggestion {
             throw new Error("Invalid LinkType: " + this.linkType);
         }
         return `> [!${this.calloutStyle}]${this.verseCollapseType} ${header}\n${this.content}\n`;
-
-        // Normal function
-        // const headerFront = `${this.book_title_in_language}:`;
-        // const head = `> [!${this.calloutStyle}] [${headerFront}${range}](${this.url})`;
-        // return head + "\n" + this.text + "\n";
     }
 
     private getUrl(

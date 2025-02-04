@@ -11,8 +11,6 @@ import GospelNotebookPlugin from "src/GospelNotebookPlugin";
 import { GenConSuggestion } from "../suggestions/GenConSuggestion";
 import { Suggester } from "./Suggester";
 
-// TODO fix the regex to account for id being in a different position.
-
 export class GenConSuggester extends Suggester<GenConSuggestion> {
     constructor(public plugin: GospelNotebookPlugin) {
         super(plugin);
