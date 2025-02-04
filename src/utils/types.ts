@@ -1,4 +1,9 @@
-
+import {
+    CalloutCollapseType,
+    CalloutStyle,
+    LinkFormat,
+    LinkType,
+} from "./settings";
 
 export interface Verse {
     volume_title: string;
@@ -9,6 +14,18 @@ export interface Verse {
     verse_number: number;
     verse_title: string;
     scripture_text: string;
+}
+
+export interface CreateScriptureInfo {
+    book: string;
+    chapterNum: number;
+    verseNums: number[];
+    language: string;
+    verseStyle: CalloutStyle;
+    linkType: LinkType;
+    linkFormat: LinkFormat;
+    verseCollapseType: CalloutCollapseType;
+    toggleInvisibleLinks: boolean;
 }
 
 export interface Chapter {
@@ -31,26 +48,25 @@ export interface Book {
 export interface GenConTalkData {
     title: string;
     author: string[];
-    content: string[];
+    paragraphs: string[];
     year: string;
     month: string;
     setting: string;
-  }
+}
 
-export interface ScriptureData{
-    book:string;
-    chapter:number;
-    verses:Map<string,string>;
-    in_language_book:string;
-
+export interface ScriptureData {
+    book: string;
+    chapter: number;
+    verses: Map<string, string>;
+    in_language_book: string;
 }
 
 export interface BookInfo {
     volume: string;
     n_ch: number;
     names: string[];
-  }
-  
+}
+
 export interface BookData {
     [key: string]: BookInfo;
-  }
+}

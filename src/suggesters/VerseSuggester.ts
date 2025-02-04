@@ -85,21 +85,20 @@ export class VerseSuggester extends Suggester<VerseSuggestion> {
         if (fullMatch === null) return [];
 
         const book = fullMatch[1];
-        const chapter = Number(fullMatch[2]);
-        const verses: number[] = this.parseVerses(fullMatch[3]);
+        const chapterNum = Number(fullMatch[2]);
+        const verseNums: number[] = this.parseVerses(fullMatch[3]);
 
-        const suggestion = new VerseSuggestion(
+        const suggestion = await VerseSuggestion.create({
             verseStyle,
             book,
-            chapter,
-            verses,
+            chapterNum,
+            verseNums,
             language,
             linkType,
             linkFormat,
             toggleInvisibleLinks,
-            verseCollapseType
-        );
-        await suggestion.loadVerse();
+            verseCollapseType,
+        });
         return [suggestion];
     }
 

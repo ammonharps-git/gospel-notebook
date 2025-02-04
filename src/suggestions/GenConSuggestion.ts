@@ -5,59 +5,8 @@ import { Suggestion } from "./Suggestion";
 import { GenConDAO } from "src/data_access/GenConDAO";
 
 export class GenConSuggestion extends Suggestion {
-    private title;
-    private authorName;
-    private authorTitle;
-    private date;
-    private formattedParagraphs;
-    private style;
-    private url;
-
-    constructor(
-        title: string,
-        authorName: string,
-        authorTitle: string,
-        date: string,
-        formattedParagraphs: string,
-        preview: string,
-        style: CalloutStyle,
-        url: string
-    ) {
-        super();
-        this.title = title;
-        this.authorName = authorName;
-        this.authorTitle = authorTitle;
-        this.date = date;
-        this.formattedParagraphs = formattedParagraphs;
-        this.preview = preview;
-        this.style = style;
-        this.url = url;
-    }
-
-    public getFinalSuggestion(): string {
-        if (!(this.style in CalloutStyle)) {
-            console.warn(
-                "Invalid quote callout style found. Invalid style:",
-                this.style
-            );
-        }
-        if (this.style === CalloutStyle.Stylized) {
-            let headerFront = `>[!stylized] [${this.title}](${this.url})`;
-            const attribution = `>> [!genconcitation]\n>> ${this.authorName}\n>> ${this.authorTitle}\n>>${this.date}`;
-            return (
-                headerFront +
-                "\n" +
-                this.formattedParagraphs +
-                attribution +
-                "\n"
-            );
-        } else if (this.style === CalloutStyle.Classic) {
-            return `> [!gencon] ${this.authorName} (${this.authorTitle})\n${this.formattedParagraphs}> [${this.authorName}, _${this.title}_, ${this.date} General Conference](${this.url})\n`;
-        } else {
-            throw new Error(
-                "Invalid quote callout style error. Style: " + this.style
-            );
-        }
+    constructor(preview: string, content: string) {
+        super(preview, content);
     }
 
     // Static methods
@@ -81,7 +30,7 @@ export class GenConSuggestion extends Suggestion {
                 outstring += `> \n`;
             }
         }
-        return outstring ? outstring : "> > %% Quote goes here! %%\n> \n";
+        return outstring ? outstring : `${indent}%% Quote goes here! %%\n> \n`;
     }
 
     static async create(
@@ -93,25 +42,37 @@ export class GenConSuggestion extends Suggestion {
         const talkData: GenConTalkData = await dao.fetchGenConTalk(url, "GET");
 
         // Destructure
-        const { month, year, title, author, content } = talkData;
+        const { month, year, title, author, paragraphs } = talkData;
         const authorName = author[0];
         const authorTitle = author[1];
         const preview = `${title} (by ${authorName})`;
         const date = this.formatDate(`${month}-${year}`);
         const formattedParagraphs =
             style == CalloutStyle.Stylized
-                ? this.formatIndented(content)
-                : this.formatIndented(content, 2);
+                ? this.formatIndented(paragraphs)
+                : this.formatIndented(paragraphs, 2);
 
-        return new GenConSuggestion(
-            title,
-            authorName,
-            authorTitle,
-            date,
-            formattedParagraphs,
-            preview,
-            style,
-            url
-        );
+        // Create the final suggestion text
+        let content = "No Suggestion found!";
+        if (!(style in CalloutStyle)) {
+            console.warn(
+                "Invalid quote callout style found. Invalid style:",
+                style
+            );
+        }
+        if (style === CalloutStyle.Stylized) {
+            let headerFront = `>[!stylized] [${title}](${url})`;
+            const attribution = `>> [!genconcitation]\n>> ${authorName}\n>> ${authorTitle}\n>>${date}`;
+            content =
+                headerFront + "\n" + formattedParagraphs + attribution + "\n";
+        } else if (style === CalloutStyle.Classic) {
+            content = `> [!gencon] ${authorName} (${authorTitle})\n${formattedParagraphs}> [${authorName}, _${title}_, ${date} General Conference](${url})\n`;
+        } else {
+            throw new Error(
+                "Invalid quote callout style error. Style: " + style
+            );
+        }
+
+        return new GenConSuggestion(preview, content);
     }
 }

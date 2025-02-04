@@ -16,7 +16,7 @@ export class GenConDAO extends DataAccess {
     ): Promise<GenConTalkData> {
         let title = "";
         let author: string[] = [];
-        let content: string[] = [];
+        let paragraphs: string[] = [];
         let year = "";
         let month = "";
         let setting = "";
@@ -42,7 +42,7 @@ export class GenConDAO extends DataAccess {
             return {
                 title,
                 author,
-                content,
+                paragraphs,
                 year,
                 month,
                 setting,
@@ -78,7 +78,7 @@ export class GenConDAO extends DataAccess {
                     for (let i = start; i <= paragraphEnd; i++) {
                         const paragraph = $(`#p${i}`).text()?.trim();
                         if (paragraph) {
-                            content.push(paragraph);
+                            paragraphs.push(paragraph);
                         } else {
                             console.warn(`Paragraph #${i} not found.`);
                         }
@@ -112,7 +112,7 @@ export class GenConDAO extends DataAccess {
                         }
                         if (include) {
                             console.log("Adding a paragraph to the result!"); // testing
-                            content.push(paragraph.text()?.trim());
+                            paragraphs.push(paragraph.text()?.trim());
                         }
                         if (foundEnd) {
                             break;
@@ -143,7 +143,7 @@ export class GenConDAO extends DataAccess {
             month = parsedData.pathParts[3];
             setting = "General Conference";
 
-            if (!title || !content) {
+            if (!title || !paragraphs) {
                 throw new Error(
                     "Unable to extract the necessary data from the webpage."
                 );
@@ -154,7 +154,7 @@ export class GenConDAO extends DataAccess {
         return {
             title,
             author,
-            content,
+            paragraphs,
             year,
             month,
             setting,

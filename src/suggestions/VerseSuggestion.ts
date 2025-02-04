@@ -5,69 +5,26 @@ import {
     LinkType,
 } from "src/utils/settings";
 import { AvailableLanguage } from "../utils/lang";
-import { BookData, ScriptureData, Verse } from "../utils/types";
+import {
+    BookData,
+    ScriptureData,
+    CreateScriptureInfo as ScriptureCreationInfo,
+    Verse,
+} from "../utils/types";
 import { book_data } from "src/data_access/config";
 import { Suggestion } from "./Suggestion";
 import { VerseDAO } from "src/data_access/VerseDAO";
+import { link } from "fs";
 
 // TODO refactor into static create method. Clean up the class, remove public variables.
 export class VerseSuggestion extends Suggestion {
-    public chapter_data: ScriptureData[];
-    private bookdata: BookData = book_data;
-    private book_title_in_language: string;
-    private url: string;
-    private dao: VerseDAO;
-    private content = "";
-
-    constructor(
-        public calloutStyle: CalloutStyle,
-        public book: string,
-        public chapterNum: number,
-        public verseNums: number[], // FIXME avoid primative obsession
-        public lang: AvailableLanguage,
-        public linkType: LinkType,
-        public linkFormat: LinkFormat,
-        public createInvisibleLink: boolean,
-        public verseCollapseType: CalloutCollapseType
-    ) {
-        super();
-        this.dao = new VerseDAO();
+    constructor(preview: string, content: string) {
+        super(preview, content);
     }
 
-    public getFinalSuggestion(): string {
-        // let linkFormat = this.linkFormat;
-        let range = this.formatNumberList(this.verseNums);
+    // Static Methods
 
-        let header: string;
-        if (this.linkType == LinkType.ChurchWebsite) {
-            const invisibleLink = this.createInvisibleLink
-                ? ""
-                : this.linkFormat == LinkFormat.Markdown
-                ? `[[${this.book_title_in_language}|]]`
-                : `[](${encodeURIComponent(this.book_title_in_language)})`;
-
-            header = `[${this.book_title_in_language}:${range}](${this.url}) ${invisibleLink}`;
-        } else if (this.linkType == LinkType.InternalMarkdown) {
-            header = `[[${this.book_title_in_language}|${this.book_title_in_language}:${range}]]`;
-        } else {
-            throw new Error("Invalid LinkType: " + this.linkType);
-        }
-        return `> [!${this.calloutStyle}]${this.verseCollapseType} ${header}\n${this.content}\n`;
-    }
-
-    private getUrl(
-        volume: string,
-        book: string,
-        chapterNum: string | number,
-        language: string,
-        verseNums: number[]
-    ): string {
-        return `https://www.churchofjesuschrist.org/study/scriptures/${volume}/${book}/${chapterNum}?lang=${language}&id=p${verseNums.join(
-            ","
-        )}#p${Math.min(...verseNums)}`;
-    }
-
-    private convertToVerses(
+    private static convertToVerses(
         chapterData: ScriptureData[],
         verseNums: number[],
         volume: string,
@@ -97,7 +54,26 @@ export class VerseSuggestion extends Suggestion {
         return verses;
     }
 
-    private toText(verses: Verse[]): string {
+    private static getShortenedName(bookdata: BookData, bookTitle: string) {
+        for (const key in bookdata) {
+            if (bookdata[key].names.includes(bookTitle)) {
+                let volume = bookdata[key].volume;
+                return [key, volume];
+            }
+        }
+        return [];
+    }
+
+    private static toPreviewText(verses: Verse[]): string {
+        return verses
+            .map(
+                ({ verse_number, scripture_text }) =>
+                    `${verse_number}. ${scripture_text}`
+            )
+            .join("\n");
+    }
+
+    private static toText(verses: Verse[]): string {
         const referenceText: String[] = [];
         let lastVerseNum = 0;
         for (let i = 0; i < verses.length; i++) {
@@ -119,56 +95,7 @@ export class VerseSuggestion extends Suggestion {
         return "> " + referenceText.join("");
     }
 
-    private toPreviewText(verses: Verse[]): string {
-        return verses
-            .map(
-                ({ verse_number, scripture_text }) =>
-                    `${verse_number}. ${scripture_text}`
-            )
-            .join("\n");
-    }
-
-    private getShortenedName(bookTitle: string) {
-        for (const key in this.bookdata) {
-            if (this.bookdata[key].names.includes(bookTitle)) {
-                let volume = this.bookdata[key].volume;
-                return [key, volume];
-            }
-        }
-        return [];
-    }
-
-    public async loadVerse(): Promise<void> {
-        this.chapter_data = [];
-        const [book_title_short, volume_title_short] = this.getShortenedName(
-            this.book
-        );
-        this.url = this.getUrl(
-            volume_title_short,
-            book_title_short,
-            this.chapterNum,
-            this.lang,
-            this.verseNums
-        );
-        let scriptdata: ScriptureData = await this.dao.fetchScripture(
-            this.url,
-            "GET"
-        );
-        this.book_title_in_language = scriptdata.in_language_book;
-        this.chapter_data.push(scriptdata);
-        const verses: Verse[] = this.convertToVerses(
-            this.chapter_data,
-            this.verseNums,
-            volume_title_short,
-            this.book,
-            book_title_short,
-            this.chapterNum
-        );
-        this.content = this.toText(verses);
-        this.preview = this.toPreviewText(verses);
-    }
-
-    public formatNumberList(numbers: number[]): string {
+    private static formatNumberList(numbers: number[]): string {
         if (numbers.length === 0) return "";
 
         // Ensure the numbers are sorted
@@ -202,5 +129,85 @@ export class VerseSuggestion extends Suggestion {
         }
 
         return result.join(", ");
+    }
+
+    private static getUrl(
+        volume: string,
+        book: string,
+        chapterNum: string | number,
+        language: string,
+        verseNums: number[]
+    ): string {
+        return `https://www.churchofjesuschrist.org/study/scriptures/${volume}/${book}/${chapterNum}?lang=${language}&id=p${verseNums.join(
+            ","
+        )}#p${Math.min(...verseNums)}`;
+    }
+
+    static async create(scriptureInfo: ScriptureCreationInfo) {
+        // Destructure
+        const {
+            book,
+            chapterNum,
+            language,
+            verseNums,
+            linkType,
+            toggleInvisibleLinks,
+            linkFormat,
+            verseStyle,
+            verseCollapseType,
+        } = scriptureInfo;
+
+        // Get shortened name
+        const [book_title_short, volume_title_short] = this.getShortenedName(
+            book_data,
+            book
+        );
+
+        // Get URL
+        const url = this.getUrl(
+            volume_title_short,
+            book_title_short,
+            chapterNum,
+            language,
+            verseNums
+        );
+
+        // Fetch scripture data
+        const dao = new VerseDAO();
+        let scriptdata: ScriptureData = await dao.fetchScripture(url, "GET");
+
+        const book_title_in_language = scriptdata.in_language_book;
+        const chapter_data = [];
+        chapter_data.push(scriptdata);
+
+        const verses: Verse[] = this.convertToVerses(
+            chapter_data,
+            verseNums,
+            volume_title_short,
+            book,
+            book_title_short,
+            chapterNum
+        );
+        const paragraphs = this.toText(verses);
+        const preview = this.toPreviewText(verses);
+        const range = this.formatNumberList(verseNums);
+
+        let header: string;
+        if (linkType == LinkType.ChurchWebsite) {
+            const invisibleLink = toggleInvisibleLinks
+                ? ""
+                : linkFormat == LinkFormat.Markdown
+                ? `[[${book_title_in_language}|]]`
+                : `[](${encodeURIComponent(book_title_in_language)})`;
+
+            header = `[${book_title_in_language}:${range}](${url}) ${invisibleLink}`;
+        } else if (linkType == LinkType.InternalMarkdown) {
+            header = `[[${book_title_in_language}|${book_title_in_language}:${range}]]`;
+        } else {
+            throw new Error("Invalid LinkType: " + linkType);
+        }
+        const content = `> [!${verseStyle}]${verseCollapseType} ${header}\n${paragraphs}\n`;
+
+        return new VerseSuggestion(preview, content);
     }
 }

@@ -46,7 +46,7 @@ export abstract class Suggester<T extends Suggestion> extends EditorSuggest<T> {
         if (!this.context) return;
 
         this.context.editor.replaceRange(
-            suggestion.getFinalSuggestion(),
+            suggestion.content,
             this.context.start,
             this.context.end
         );

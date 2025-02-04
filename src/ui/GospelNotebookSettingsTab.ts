@@ -193,7 +193,7 @@ export class GospelNotebookSettingsTab extends PluginSettingTab {
         new Setting(containerEl)
             .setName("Quote Collapsability")
             .setDesc(
-                "When inserting a cconference quote, this determines if the verse callout block will be expanded, collapsed, or non-collapsable by default."
+                "When inserting a conference quote, this determines if the verse callout block will be expanded, collapsed, or non-collapsable by default."
             )
             .addDropdown((dropdown) => {
                 dropdown.addOption(VerseCollapseType.Collapsed, "Collapsed");
