@@ -68,7 +68,7 @@
     }
 }
 
-/* Classic Style Scripture Callout */
+/* Obselete Style Scripture Callout */
 .callout[data-callout="mormon"] {
     --callout-icon: book-plus;
 }
@@ -78,13 +78,67 @@
     --callout-icon: book-marked;
 }
 
+/* Ensign Callout */
+.callout[data-callout="ensign"] {
+    --callout-icon: book-open-text;
+    --callout-color: 152, 152, 152;
+}
+
+/* News Callout */
+.callout[data-callout="news"] {
+    --callout-icon: newspaper;
+    --callout-color: 152, 152, 152;
+}
+
+/* Reference Callout */
+.callout[data-callout="reference"] {
+    --callout-icon: library-big;
+    --callout-color: 152, 152, 152;
+}
+
+/* Research Callout */
+.callout[data-callout="research"] {
+    --callout-icon: microscope;
+    --callout-color: 152, 152, 152;
+}
+
+/* Preach My Gospel Callout */
+.callout[data-callout="pmg"] {
+    --callout-icon: notebook-text;
+    --callout-color: 152, 152, 152;
+}
+
+/* Church Study Materials Callout */
+.callout[data-callout="study"] {
+    --callout-icon: notebook-pen;
+    --callout-color: 152, 152, 152;
+}
+
+/* Church Essay Callout */
+.callout[data-callout="study"] {
+    --callout-icon: scroll;
+    --callout-color: 152, 152, 152;
+}
+
+/* Church Essay Callout */
+.callout[data-callout="essay"] {
+    --callout-icon: scroll-text;
+    --callout-color: 152, 152, 152;
+}
+
 /* GenCon Callout */
 .callout[data-callout="gencon"] {
     --callout-icon: lectern;
     --callout-color: 152, 152, 152;
 }
 
-/* GenCon Citation */
+/* GenCon Callout */
+.callout[data-callout="speech"] {
+    --callout-icon: speech;
+    --callout-color: 152, 152, 152;
+}
+
+/* GenCon Stylized Citation */
 .callout[data-callout="genconcitation"] {
     border-color: transparent !important;
     background-color: transparent !important;
