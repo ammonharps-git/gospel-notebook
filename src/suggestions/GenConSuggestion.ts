@@ -7,6 +7,7 @@ import {
 } from "src/utils/settings";
 import { Suggestion } from "./Suggestion";
 import { GenConDAO } from "src/data_access/GenConDAO";
+import { slice } from "cheerio/lib/api/traversing";
 
 export class GenConSuggestion extends Suggestion {
     constructor(preview: string, content: string) {
@@ -37,6 +38,24 @@ export class GenConSuggestion extends Suggestion {
         return outstring ? outstring : `${indent}%% Quote goes here! %%\n> \n`;
     }
 
+    static filterFootnotes(content: string): string {
+        const reg = /((\w+[.?!,"'])\d+)/g;
+        const matches = content.matchAll(reg);
+        if (matches) {
+            console.debug("Found footnotes...");
+            for (const match of matches) {
+                console.debug(
+                    "> Removing footnote. Replacing " +
+                        match[1] +
+                        " with " +
+                        match[2]
+                );
+                content = content.replace(match[1], match[2]);
+            }
+        }
+        return content;
+    }
+
     static async create(
         url: string,
         style: CalloutStyle,
@@ -52,10 +71,11 @@ export class GenConSuggestion extends Suggestion {
         const authorTitle = author[1];
         const preview = `${title} (by ${authorName})`;
         const date = this.formatDate(`${month}-${year}`);
-        const formattedParagraphs =
+        const formattedParagraphs = this.filterFootnotes(
             style == CalloutStyle.Stylized
                 ? this.formatIndented(paragraphs)
-                : this.formatIndented(paragraphs, 2);
+                : this.formatIndented(paragraphs, 2)
+        );
 
         // Create the final suggestion text
         let content = "No Suggestion found!";
