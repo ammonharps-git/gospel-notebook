@@ -1,15 +1,15 @@
-import { GenConTalkData } from "src/utils/types";
+import { OnlineResourceData } from "src/utils/types";
 import { format, parse } from "date-fns";
 import {
     CalloutCollapseType,
     CalloutStyle,
     LinkFormat,
+    SupportedOnlineResource,
 } from "src/utils/settings";
 import { Suggestion } from "./Suggestion";
-import { GenConDAO } from "src/data_access/GenConDAO";
-import { slice } from "cheerio/lib/api/traversing";
+import { OnlineResourceDAO } from "src/data_access/OnlineResourceDAO";
 
-export class GenConSuggestion extends Suggestion {
+export class OnlineResourceSuggestion extends Suggestion {
     constructor(preview: string, content: string) {
         super(preview, content);
     }
@@ -60,16 +60,25 @@ export class GenConSuggestion extends Suggestion {
         url: string,
         style: CalloutStyle,
         collpseType: CalloutCollapseType
-    ): Promise<GenConSuggestion> {
+    ): Promise<OnlineResourceSuggestion> {
         // Fetch talk data
-        const dao = new GenConDAO();
-        const talkData: GenConTalkData = await dao.fetchGenConTalk(url, "GET");
+        const dao = new OnlineResourceDAO();
+        const talkData: OnlineResourceData = await dao.fetchResource(
+            url,
+            "GET"
+        );
 
         // Destructure
-        const { month, year, title, author, paragraphs } = talkData;
-        const authorName = author[0];
-        const authorTitle = author[1];
-        const preview = `${title} (by ${authorName})`;
+        const {
+            month,
+            year,
+            title,
+            author,
+            authorRole,
+            paragraphs,
+            resourceType,
+        } = talkData;
+        const preview = `${title} (by ${author})`;
         const date = this.formatDate(`${month}-${year}`);
         const formattedParagraphs = this.filterFootnotes(
             style == CalloutStyle.Stylized
@@ -87,17 +96,33 @@ export class GenConSuggestion extends Suggestion {
         }
         if (style === CalloutStyle.Stylized) {
             let headerFront = `>[!stylized] [${title}](${url})`;
-            const attribution = `>> [!genconcitation]${collpseType}\n>> ${authorName}\n>> ${authorTitle}\n>>${date}`;
+            const attribution = `>> [!genconcitation]${collpseType}\n>> ${author}\n>> ${authorRole}\n>>${date}`;
             content =
                 headerFront + "\n" + formattedParagraphs + attribution + "\n";
         } else if (style === CalloutStyle.Classic) {
-            content = `> [!gencon]${collpseType} ${authorName} (${authorTitle})\n${formattedParagraphs}> [${authorName}, _${title}_, ${date} General Conference](${url})\n`;
+            let calloutLabel: string;
+            switch (resourceType) {
+                case SupportedOnlineResource.GeneralConference:
+                    calloutLabel = "gencon";
+                    break;
+                case SupportedOnlineResource.Ensign:
+                    calloutLabel = "ensign";
+                    break;
+                default:
+                    console.warn(
+                        "Invalid resource type found. Invalid type:",
+                        resourceType
+                    );
+                    calloutLabel = "note";
+            }
+            const formattedRole = !!authorRole ? "(" + authorRole + ")" : "";
+            content = `> [!${calloutLabel}]${collpseType} ${author} ${formattedRole}\n${formattedParagraphs}> [${author}, _${title}_, ${date} ${resourceType}](${url})\n`;
         } else {
             throw new Error(
                 "Invalid quote callout style error. Style: " + style
             );
         }
 
-        return new GenConSuggestion(preview, content);
+        return new OnlineResourceSuggestion(preview, content);
     }
 }

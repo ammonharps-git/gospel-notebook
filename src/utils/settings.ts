@@ -21,6 +21,11 @@ export enum CalloutStyle {
     Stylized = "stylized",
 }
 
+export enum SupportedOnlineResource {
+    GeneralConference = "General Conference",
+    Ensign = "Ensign",
+}
+
 export interface GospelNotebookSettings {
     language: AvailableLanguage;
     linkFormat: LinkFormat;

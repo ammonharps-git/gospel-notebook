@@ -1,6 +1,6 @@
 import { requestUrl } from "obsidian";
 import * as cheerio from "cheerio";
-import { GenConTalkData } from "../utils/types";
+import { OnlineResourceData } from "../utils/types";
 import {
     NAME_QUERIES,
     AUTHOR_QUERIES,
@@ -8,31 +8,41 @@ import {
     PARAGRAPHS_IN_BODY_QUERY,
 } from "./config";
 import { DataAccess } from "./DataAccess";
+import { SupportedOnlineResource } from "src/utils/settings";
 
-export class GenConDAO extends DataAccess {
-    public async fetchGenConTalk(
+export class OnlineResourceDAO extends DataAccess {
+    public async fetchResource(
         url: string,
         method: "GET" | "POST" | "PATCH"
-    ): Promise<GenConTalkData> {
+    ): Promise<OnlineResourceData> {
         let title = "";
-        let author: string[] = [];
+        let author: string = "";
+        let authorRole = null;
         let paragraphs: string[] = [];
         let year = "";
         let month = "";
-        let setting = "";
         let parsedData = this.parseURL(url);
         let lang = parsedData.queryParams.lang
             ? parsedData.queryParams.lang
             : "eng";
 
-        if (parsedData.pathParts[1] !== "general-conference") {
-            throw new Error(
-                "GenConDAO can only refernce talks from General Conference."
-            );
+        let resourceType: SupportedOnlineResource;
+        switch (parsedData.pathParts[1]) {
+            case "general-conference":
+                resourceType = SupportedOnlineResource.GeneralConference;
+                break;
+            case "ensign":
+                resourceType = SupportedOnlineResource.Ensign;
+                break;
+            default:
+                console.warn(
+                    "Found unsupported URL path. Defaulting to General Conference."
+                );
+                resourceType = SupportedOnlineResource.GeneralConference;
         }
 
+        // Make network request
         let talkurl = this.buildAPIURL(lang, url);
-
         const response = await requestUrl({
             url: talkurl,
             method: method,
@@ -42,33 +52,40 @@ export class GenConDAO extends DataAccess {
             return {
                 title,
                 author,
+                authorRole,
                 paragraphs,
                 year,
                 month,
-                setting,
+                resourceType,
             };
         }
 
         try {
+            // Get Title
             const $ = cheerio.load(response.json["content"]["body"]);
             const nameElement = this.cheerioFind($, NAME_QUERIES);
             title = nameElement ? nameElement.text().trim() : "Title not found";
 
+            // Get Author
             const authorElement = this.cheerioFind($, AUTHOR_QUERIES);
-            let authorname = authorElement
+            author = authorElement
                 ? authorElement
                       .text()
                       .trim()
                       .replace(/^[B|b]y\s/, "")
-                : "Author not found";
-            const authorRoleElement = this.cheerioFind($, AUTHOR_TITLE);
-            let authorrole = authorRoleElement
-                ? authorRoleElement.text().trim()
-                : "Author role not found";
-            author.push(authorname);
-            author.push(authorrole);
+                : "Unknown";
+            if (author === "Unknown") console.log("Author not found");
 
+            // Get Author title/role
+            const authorRoleElement = this.cheerioFind($, AUTHOR_TITLE);
+            authorRole = authorRoleElement
+                ? authorRoleElement.text().trim()
+                : null;
+            if (!authorRole) console.log("Author role not found.");
+
+            // Get the paragraphs
             if (!!parsedData.paragraphNums) {
+                // Paragraphs are listed by paragraph number
                 const { startNum: start, endNum: end } =
                     parsedData.paragraphNums;
                 if (!!start) {
@@ -85,11 +102,10 @@ export class GenConDAO extends DataAccess {
                     }
                 }
             } else if (!!parsedData.paragraphIDs) {
+                // Paragraphs are listed by unique IDs
                 const { startID, endID } = parsedData.paragraphIDs;
                 console.log("Started parsing with id range:", startID, endID); // testing
                 if (!!startID) {
-                    // Paragraphs are listed by unique IDs
-
                     // Select all elements whose id starts with 'p'
                     const elements = $('[id^="p"]');
 
@@ -134,14 +150,13 @@ export class GenConDAO extends DataAccess {
                     );
                 }
             } else {
-                console.warn(
+                console.log(
                     "Failed to extract the paragraph data from the webpage."
                 );
             }
 
             year = parsedData.pathParts[2];
             month = parsedData.pathParts[3];
-            setting = "General Conference";
 
             if (!title || !paragraphs) {
                 throw new Error(
@@ -154,10 +169,11 @@ export class GenConDAO extends DataAccess {
         return {
             title,
             author,
+            authorRole,
             paragraphs,
             year,
             month,
-            setting,
+            resourceType,
         };
     }
 }

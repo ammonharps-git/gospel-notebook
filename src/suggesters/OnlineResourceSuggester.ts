@@ -8,10 +8,10 @@ import {
     Notice,
 } from "obsidian";
 import GospelNotebookPlugin from "src/GospelNotebookPlugin";
-import { GenConSuggestion } from "../suggestions/GenConSuggestion";
+import { OnlineResourceSuggestion } from "../suggestions/OnlineResourceSuggestion";
 import { Suggester } from "./Suggester";
 
-export class GenConSuggester extends Suggester<GenConSuggestion> {
+export class OnlineResourceSuggester extends Suggester<OnlineResourceSuggestion> {
     constructor(public plugin: GospelNotebookPlugin) {
         super(plugin);
     }
@@ -27,7 +27,8 @@ export class GenConSuggester extends Suggester<GenConSuggestion> {
     // Returns RegEx expression with optional flags
     private getQuoteReg(flags?: string): RegExp {
         return new RegExp(
-            `${this.getQuoteTrigger()}(https:\\/\\/www\\.churchofjesuschrist\\.org\\/study\\/general-conference\\/\\d{1,4}\\/\\d{1,3}\\/[\\w-]+\\S*)`,
+            // `${this.getQuoteTrigger()}(https:\\/\\/www\\.churchofjesuschrist\\.org\\/study\\/general-conference\\/\\d{1,4}\\/\\d{1,3}\\/[\\w-]+\\S*)`,
+            `${this.getQuoteTrigger()}(https:\\/\\/www\\.churchofjesuschrist\\.org\\/[\\w-]+\\/[\\w-]+\\/\\d{1,4}\\/\\d{1,3}\\/[\\w-]+\\S*)`,
             flags
         );
     }
@@ -60,7 +61,7 @@ export class GenConSuggester extends Suggester<GenConSuggestion> {
     // Creates and returns new suggestion (called when onTrigger returns a non-null value)
     async getSuggestions(
         context: EditorSuggestContext
-    ): Promise<GenConSuggestion[]> {
+    ): Promise<OnlineResourceSuggestion[]> {
         const { query } = context;
         const { quoteStyle, quoteCollapseType } = this.plugin.settings;
         const fullMatch = query.match(this.getQuoteReg("i"));
@@ -74,7 +75,7 @@ export class GenConSuggester extends Suggester<GenConSuggestion> {
         const url = fullMatch[1];
 
         // Create and return suggestion
-        const suggestion = await GenConSuggestion.create(
+        const suggestion = await OnlineResourceSuggestion.create(
             url,
             quoteStyle,
             quoteCollapseType

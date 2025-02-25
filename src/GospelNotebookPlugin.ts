@@ -2,7 +2,7 @@ import { Plugin } from "obsidian";
 import { GospelNotebookSettings, DEFAULT_SETTINGS } from "./utils/settings";
 import { VerseSuggester } from "./suggesters/VerseSuggester";
 import { GospelNotebookSettingsTab } from "./ui/GospelNotebookSettingsTab";
-import { GenConSuggester } from "./suggesters/GenConSuggester";
+import { OnlineResourceSuggester } from "./suggesters/OnlineResourceSuggester";
 
 export default class GospelNotebookPlugin extends Plugin {
     settings: GospelNotebookSettings;
@@ -11,7 +11,7 @@ export default class GospelNotebookPlugin extends Plugin {
         await this.loadSettings();
         this.addSettingTab(new GospelNotebookSettingsTab(this.app, this));
         this.registerEditorSuggest(new VerseSuggester(this));
-        this.registerEditorSuggest(new GenConSuggester(this));
+        this.registerEditorSuggest(new OnlineResourceSuggester(this));
     }
 
     onunload() {}

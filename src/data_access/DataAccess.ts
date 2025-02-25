@@ -113,9 +113,9 @@ export abstract class DataAccess {
 
     protected extractURLPath(url: string): string | null {
         const genconregex =
-            /https:\/\/www\.churchofjesuschrist\.org\/study(\/[\w-]+\/\d{4}\/\d{2}\/[\w-]+)/;
+            /https:\/\/www\.churchofjesuschrist\.org\/\w+(\/[\w-]+\/\d{4}\/\d{2}\/[\w-]+)/;
         const scriptureregex =
-            /https:\/\/www\.churchofjesuschrist\.org\/study(\/[\w-]+\/[\w-]+\/[\w-]+\/[\w-]+)/;
+            /https:\/\/www\.churchofjesuschrist\.org\/\w+(\/[\w-]+\/[\w-]+\/[\w-]+\/[\w-]+)/;
         const match = url.match(genconregex)
             ? url.match(genconregex)
             : url.match(scriptureregex)

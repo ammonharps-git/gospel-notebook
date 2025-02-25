@@ -3,6 +3,7 @@ import {
     CalloutStyle,
     LinkFormat,
     LinkType,
+    SupportedOnlineResource,
 } from "./settings";
 
 export interface Verse {
@@ -45,13 +46,14 @@ export interface Book {
     chapters: Chapter[];
 }
 
-export interface GenConTalkData {
+export interface OnlineResourceData {
     title: string;
-    author: string[];
+    author: string;
+    authorRole: string | null;
     paragraphs: string[];
     year: string;
     month: string;
-    setting: string;
+    resourceType: SupportedOnlineResource;
 }
 
 export interface ScriptureData {
