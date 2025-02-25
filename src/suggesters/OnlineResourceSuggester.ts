@@ -28,7 +28,7 @@ export class OnlineResourceSuggester extends Suggester<OnlineResourceSuggestion>
     private getQuoteReg(flags?: string): RegExp {
         return new RegExp(
             // `${this.getQuoteTrigger()}(https:\\/\\/www\\.churchofjesuschrist\\.org\\/study\\/general-conference\\/\\d{1,4}\\/\\d{1,3}\\/[\\w-]+\\S*)`,
-            `${this.getQuoteTrigger()}(https:\\/\\/www\\.churchofjesuschrist\\.org\\/[\\w-]+\\/[\\w-]+\\/\\d{1,4}\\/\\d{1,3}\\/[\\w-]+\\S*)`,
+            `${this.getQuoteTrigger()}(https:\\/\\/www\\.churchofjesuschrist\\.org\\/([\\w-]+\\/)+\\d{1,4}\\/\\d{1,3}\\/[\\w-]+\\S*)`,
             flags
         );
     }

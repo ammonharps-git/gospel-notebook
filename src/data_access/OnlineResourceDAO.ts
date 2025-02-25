@@ -19,8 +19,8 @@ export class OnlineResourceDAO extends DataAccess {
         let author: string = "";
         let authorRole = null;
         let paragraphs: string[] = [];
-        let year = "";
-        let month = "";
+        let year: string | undefined;
+        let month: string | undefined;
         let parsedData = this.parseURL(url);
         let lang = parsedData.queryParams.lang
             ? parsedData.queryParams.lang
@@ -35,10 +35,9 @@ export class OnlineResourceDAO extends DataAccess {
                 resourceType = SupportedOnlineResource.Ensign;
                 break;
             default:
-                console.warn(
-                    "Found unsupported URL path. Defaulting to General Conference."
+                throw new Error(
+                    `Tried to fetch from an unsupported type of URL: ${parsedData.pathParts[1]}`
                 );
-                resourceType = SupportedOnlineResource.GeneralConference;
         }
 
         // Make network request
@@ -155,8 +154,8 @@ export class OnlineResourceDAO extends DataAccess {
                 );
             }
 
-            year = parsedData.pathParts[2];
-            month = parsedData.pathParts[3];
+            year = parsedData.pathParts.at(-3);
+            month = parsedData.pathParts.at(-2);
 
             if (!title || !paragraphs) {
                 throw new Error(

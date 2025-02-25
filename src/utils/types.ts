@@ -51,8 +51,8 @@ export interface OnlineResourceData {
     author: string;
     authorRole: string | null;
     paragraphs: string[];
-    year: string;
-    month: string;
+    year: string | undefined;
+    month: string | undefined;
     resourceType: SupportedOnlineResource;
 }
 
