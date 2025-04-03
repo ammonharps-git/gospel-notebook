@@ -195,10 +195,8 @@ export class VerseSuggestion extends Suggestion {
         let header: string;
         if (linkType == LinkType.ChurchWebsite) {
             const invisibleLink = toggleInvisibleLinks
-                ? ""
-                : linkFormat == LinkFormat.Markdown
                 ? `[[${book_title_in_language}|]]`
-                : `[](${encodeURIComponent(book_title_in_language)})`;
+                : "";
 
             header = `[${book_title_in_language}:${range}](${url}) ${invisibleLink}`;
         } else if (linkType == LinkType.InternalMarkdown) {
