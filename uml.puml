@@ -1,0 +1,36 @@
+@startuml Gospel Notebook
+abstract class Plugin {}
+class GospelNotebookPlugin extends Plugin {}
+abstract class PluginSettingsTab {}
+class SettingsTab extends PluginSettingsTab {}
+interface Settings {}
+
+abstract class EditorSuggest<T> {}
+abstract class Suggester<T extends Suggestion> extends EditorSuggest {
+    abstract onTrigger(EditorPosition, Editor, TFile | null): EditorSuggestTriggerInfo | null
+    abstract getSuggestions(EditorSuggestContext): T[] | Promise<T[]>
+    render(HTMLElement, Suggestion): void
+}
+class WebSuggester extends Suggester {}
+class VerseSuggester extends WebSuggester {}
+class GenConSuggester extends WebSuggester {}
+class EnsignSuggester extends WebSuggester {}
+class ByuSpeechSuggester extends WebSuggester {}
+
+interface WebScraper {}
+class CheerioWebScraper implements WebScraper {}
+
+class Suggestion {
+    + content
+    + preview
+}
+
+'Relationships
+SettingsTab ---> Settings : updates
+GospelNotebookPlugin ---> SettingsTab : initalizes
+GospelNotebookPlugin ---> Settings : contains
+Suggester ---> Settings : reads
+WebSuggester ---> WebScraper : uses
+Suggester ---> Suggestion : uses
+
+@enduml
