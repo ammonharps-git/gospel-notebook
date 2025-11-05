@@ -105,8 +105,20 @@ export class OnlineResourceSuggestion extends Suggestion {
                 case SupportedOnlineResource.GeneralConference:
                     calloutLabel = "gencon";
                     break;
-                case SupportedOnlineResource.Ensign:
-                    calloutLabel = "ensign";
+                case SupportedOnlineResource.Magazine:
+                    calloutLabel = "magazine";
+                    break;
+                case SupportedOnlineResource.Manual:
+                    calloutLabel = "manual";
+                    break;
+                case SupportedOnlineResource.Music:
+                    calloutLabel = "music";
+                    break;
+                case SupportedOnlineResource.Broadcasts:
+                    calloutLabel = "broadcast";
+                    break;
+                case SupportedOnlineResource.Handbooks:
+                    calloutLabel = "handbook";
                     break;
                 default:
                     console.warn(

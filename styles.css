@@ -84,6 +84,12 @@
     --callout-color: 152, 152, 152;
 }
 
+/* Magazine Callout */
+.callout[data-callout="magazine"] {
+    --callout-icon: book-open-text;
+    --callout-color: 152, 152, 152;
+}
+
 /* News Callout */
 .callout[data-callout="news"] {
     --callout-icon: newspaper;
@@ -123,6 +129,30 @@
 /* Church Essay Callout */
 .callout[data-callout="essay"] {
     --callout-icon: scroll-text;
+    --callout-color: 152, 152, 152;
+}
+
+/* Church Manual Callout */
+.callout[data-callout="manual"] {
+    --callout-icon: scroll-text;
+    --callout-color: 152, 152, 152;
+}
+
+/* Church Music Callout */
+.callout[data-callout="music"] {
+    --callout-icon: music;
+    --callout-color: 152, 152, 152;
+}
+
+/* Church Handbook Callout */
+.callout[data-callout="handbook"] {
+    --callout-icon: scale;
+    --callout-color: 152, 152, 152;
+}
+
+/* Church Broadcast Callout */
+.callout[data-callout="broadcast"] {
+    --callout-icon: tv;
     --callout-color: 152, 152, 152;
 }
 

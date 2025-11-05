@@ -23,7 +23,11 @@ export enum CalloutStyle {
 
 export enum SupportedOnlineResource {
     GeneralConference = "General Conference",
-    Ensign = "Ensign",
+    Magazine = "Magazine",
+    Broadcasts = "Broadcasts",
+    Manual = "Manual",
+    Music = "Music",
+    Handbooks = "Handbooks",
 }
 
 export interface GospelNotebookSettings {

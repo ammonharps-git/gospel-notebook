@@ -32,7 +32,23 @@ export class OnlineResourceDAO extends DataAccess {
                 resourceType = SupportedOnlineResource.GeneralConference;
                 break;
             case "ensign":
-                resourceType = SupportedOnlineResource.Ensign;
+            case "liahona":
+            case "ftsoy":
+            case "friend":
+            case "new-era":
+                resourceType = SupportedOnlineResource.Magazine;
+                break;
+            case "manual":
+                resourceType = SupportedOnlineResource.Manual;
+                break;
+            case "broadcasts":
+                resourceType = SupportedOnlineResource.Broadcasts;
+                break;
+            case "music":
+                resourceType = SupportedOnlineResource.Music;
+                break;
+            case "handbooks-and-callings":
+                resourceType = SupportedOnlineResource.Handbooks;
                 break;
             default:
                 throw new Error(
